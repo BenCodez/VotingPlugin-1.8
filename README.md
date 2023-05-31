@@ -1,3 +1,6 @@
+# This is for 1.8 and is NOT actively supported!!!!
+Get builds here: https://bencodez.com/job/VotingPlugin-1.8/
+
 # VotingPlugin
 Plugin on SpigotMC
 https://www.spigotmc.org/resources/votingplugin.15358/
