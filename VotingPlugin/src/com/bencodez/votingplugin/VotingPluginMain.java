@@ -49,11 +49,9 @@ import com.bencodez.advancedcore.api.rewards.RewardPlaceholderHandle;
 import com.bencodez.advancedcore.api.rewards.injected.RewardInject;
 import com.bencodez.advancedcore.api.rewards.injected.RewardInjectInt;
 import com.bencodez.advancedcore.api.rewards.injected.RewardInjectValidator;
-import com.bencodez.advancedcore.api.skull.SkullHandler;
 import com.bencodez.advancedcore.api.updater.Updater;
 import com.bencodez.advancedcore.api.user.userstorage.Column;
 import com.bencodez.advancedcore.logger.Logger;
-import com.bencodez.advancedcore.nms.NMSManager;
 import com.bencodez.votingplugin.broadcast.BroadcastHandler;
 import com.bencodez.votingplugin.commands.CommandLoader;
 import com.bencodez.votingplugin.commands.executers.CommandAdminVote;
@@ -144,7 +142,7 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 
 	@Getter
 	private PlaceHolders placeholders;
-	
+
 	@Getter
 	private VoteTester voteTester;
 
@@ -1015,7 +1013,7 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 	public void onPostLoad() {
 		loadVersionFile();
 		getOptions().setServer(bungeeSettings.getServer());
-		
+
 		voteTester = new VoteTester(plugin);
 
 		loadVoteTimer();
@@ -1519,8 +1517,6 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 								serverData.updateValues();
 								getSigns().updateSigns();
 
-								checkFirstTimeLoaded();
-
 								plugin.getUserManager().getDataManager().clearNonNeededCachedUsers();
 								plugin.extraDebug("Current cached users: "
 										+ plugin.getUserManager().getDataManager().getUserDataCache().keySet().size());
@@ -1548,28 +1544,6 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 				}
 			}
 		}
-	}
-
-	private boolean firstTimeLoaded = false;
-
-	public void checkFirstTimeLoaded() {
-		if (!firstTimeLoaded) {
-
-			if (getGui().isChestVoteTopUseSkull()) {
-				int maxToLoad = 200;
-				for (TopVoter top : topVoter.keySet()) {
-					int num = 1;
-					Set<TopVoterPlayer> players = topVoter.get(top).keySet();
-					for (TopVoterPlayer p : players) {
-						if (num <= maxToLoad) {
-							SkullHandler.getInstance().loadSkull(p.getPlayerName());
-						}
-						num++;
-					}
-				}
-			}
-		}
-		firstTimeLoaded = true;
 	}
 
 	public void updateAdvancedCoreHook() {
