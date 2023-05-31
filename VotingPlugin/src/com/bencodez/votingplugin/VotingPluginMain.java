@@ -41,14 +41,12 @@ import com.bencodez.advancedcore.api.inventory.editgui.EditGUIButton;
 import com.bencodez.advancedcore.api.inventory.editgui.valuetypes.EditGUIValueNumber;
 import com.bencodez.advancedcore.api.item.ItemBuilder;
 import com.bencodez.advancedcore.api.javascript.JavascriptPlaceholderRequest;
-import com.bencodez.advancedcore.api.messages.StringParser;
 import com.bencodez.advancedcore.api.misc.MiscUtils;
 import com.bencodez.advancedcore.api.rewards.DirectlyDefinedReward;
 import com.bencodez.advancedcore.api.rewards.Reward;
 import com.bencodez.advancedcore.api.rewards.RewardEditData;
 import com.bencodez.advancedcore.api.rewards.RewardPlaceholderHandle;
 import com.bencodez.advancedcore.api.rewards.injected.RewardInject;
-import com.bencodez.advancedcore.api.rewards.injected.RewardInjectConfigurationSection;
 import com.bencodez.advancedcore.api.rewards.injected.RewardInjectInt;
 import com.bencodez.advancedcore.api.rewards.injected.RewardInjectValidator;
 import com.bencodez.advancedcore.api.skull.SkullHandler;
@@ -1144,23 +1142,21 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 					}
 				}));
 
-		getRewardHandler().addInjectedReward(new RewardInjectConfigurationSection("VoteBossBar") {
-
-			@Override
-			public String onRewardRequested(Reward arg0, com.bencodez.advancedcore.api.user.AdvancedCoreUser user,
-					ConfigurationSection section, HashMap<String, String> placeholders) {
-				if (section.getBoolean("Enabled")) {
-					user.sendBossBar(
-							StringParser.getInstance().replacePlaceHolder(section.getString("Message", ""),
-									placeholders),
-							section.getString("Color", "BLUE"), section.getString("Style", "SOLID"),
-							(double) UserManager.getInstance().getVotingPluginUser(user).getSitesVotedOn()
-									/ plugin.getVoteSites().size(),
-							section.getInt("Delay", 30));
-				}
-				return null;
-			}
-		});
+		/*
+		 * getRewardHandler().addInjectedReward(new
+		 * RewardInjectConfigurationSection("VoteBossBar") {
+		 * 
+		 * @Override public String onRewardRequested(Reward arg0,
+		 * com.bencodez.advancedcore.api.user.AdvancedCoreUser user,
+		 * ConfigurationSection section, HashMap<String, String> placeholders) { if
+		 * (section.getBoolean("Enabled")) { user.sendBossBar(
+		 * StringParser.getInstance().replacePlaceHolder(section.getString("Message",
+		 * ""), placeholders), section.getString("Color", "BLUE"),
+		 * section.getString("Style", "SOLID"), (double)
+		 * UserManager.getInstance().getVotingPluginUser(user).getSitesVotedOn() /
+		 * plugin.getVoteSites().size(), section.getInt("Delay", 30)); } return null; }
+		 * });
+		 */
 
 		for (final TopVoter top : TopVoter.values()) {
 			getRewardHandler().addPlaceholder(new RewardPlaceholderHandle("Total_" + top.toString()) {

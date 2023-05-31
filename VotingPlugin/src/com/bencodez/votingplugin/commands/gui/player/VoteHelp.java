@@ -42,7 +42,7 @@ public class VoteHelp extends GUIHandler {
 		String colorStr = plugin.getConfigFile().getFormatCommandsVoteHelpHoverColor();
 		ChatColor hoverColor = null;
 		try {
-			hoverColor = ChatColor.of(colorStr);
+			hoverColor = ChatColor.valueOf(colorStr);
 		} catch (Exception e) {
 			plugin.getLogger().warning("Failed to get color for hover help message");
 			e.printStackTrace();

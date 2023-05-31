@@ -86,7 +86,7 @@ public class VoteURLVoteSite extends GUIHandler {
 		});
 
 		inv.addButton(new BInventoryButton(
-				new ItemBuilder(Material.CLOCK).setName("&4Last Vote").addLoreLine(user.voteCommandLastLine(site))) {
+				new ItemBuilder(Material.WATCH).setName("&4Last Vote").addLoreLine(user.voteCommandLastLine(site))) {
 
 			@Override
 			public void onClick(ClickEvent clickEvent) {

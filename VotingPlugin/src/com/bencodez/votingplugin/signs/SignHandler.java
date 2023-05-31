@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
-import org.bukkit.block.data.Directional;
 
 import com.bencodez.advancedcore.api.misc.ArrayUtils;
 import com.bencodez.advancedcore.api.misc.MiscUtils;
@@ -76,7 +74,6 @@ public class SignHandler {
 		playerName = "";
 	}
 
-	@SuppressWarnings("deprecation")
 	private boolean checkSkull(Block block) {
 		if (block.getState() instanceof Skull) {
 			if (!playerName.equals("No Player")) {
@@ -266,17 +263,6 @@ public class SignHandler {
 
 	public void updateSkulls(Location loc1, Location loc2) {
 		if (!NMSManager.getInstance().isVersion("1.12")) {
-			BlockState state = getLocation().getBlock().getState();
-			if (state instanceof Sign && state.getBlockData() instanceof Directional) {
-				Directional s = (Directional) state.getBlockData();
-				Block b = location.getBlock().getRelative(s.getFacing());
-				Block above = b.getRelative(BlockFace.UP);
-				if (checkSkull(above)) {
-					return;
-				}
-
-			}
-
 			for (Block block : MiscUtils.getInstance().getRegionBlocks(location.getWorld(), loc1, loc2)) {
 				checkSkull(block);
 			}

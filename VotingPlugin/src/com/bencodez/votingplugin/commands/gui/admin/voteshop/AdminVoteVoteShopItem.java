@@ -58,7 +58,7 @@ public class AdminVoteVoteShopItem extends GUIHandler {
 				setPathData(getKey(), name);
 			}
 		}));
-		inv.addButton(new EditGUIButton(new ItemBuilder(Material.OAK_DOOR, 1),
+		inv.addButton(new EditGUIButton(new ItemBuilder(Material.WOODEN_DOOR, 1),
 				new EditGUIValueString("Permission", plugin.getGui().getChestVoteShopPermission(identifier)) {
 
 					@Override
