@@ -1,0 +1,267 @@
+name: ${project.name}
+version: ${project.version}
+main: com.bencodez.votingplugin.VotingPluginMain
+description: Highly Customizable Voting Listener!
+website: https://www.spigotmc.org/resources/votingplugin.15358/
+author: BenCodez
+softdepend:
+- MVdWPlaceholders
+- Votifier
+- VotifierPlus
+- NuVotifier
+- Vault
+- PlaceholderAPI
+- ProtocolLib
+- MVdWPlaceholderAPI
+- AuthMe
+- SuperVanish
+- PremiumVanish
+- LuckPerms
+- nLogin
+loadbefore:
+- MCPerks
+api-version: 1.13
+folia-supported: true
+libraries:
+- org.openjdk.nashorn:nashorn-core:15.3
+commands:
+  vote:
+    description: Vote command
+  adminvote:
+    description: Admin commands for VotingPlugin
+  av:
+    description: Admin commands for VotingPlugin
+  votehelp:
+    description: See access to a list of commands, Formated in Format.yml
+    aliases: vhelp
+  votetotal:
+    description: See totals of votes
+    aliases: vtotal
+  votelast:
+    description: See the last time you voted
+    aliases: vlast
+  votenext:
+    description: See when you can vote next
+    aliases: vnext
+  votetop:
+    description: See top voters
+    aliases: vtop
+  votetoday:
+    description: See who voted today
+    aliases: vtoday
+  votegui:
+    description: Open VoteGUI
+    aliases: vgui
+  voteurl:
+    description: Open VoteURL
+    aliases: vurl
+  voteparty:
+    description: A command
+    aliases: vparty
+  voteshop:
+    description: A command
+    aliases: vshop
+  votebest:
+    description: A command
+    aliases: vbest
+  votestreak:
+    description: A command
+    aliases: vstreak
+  votetogglebroadcast:
+    description: A command
+    aliases: vtogglebroadcast
+  votepoints:
+    description: A command
+    aliases: vpoints
+  votetogglereminders:
+    aliases:
+    - vtogglereminder
+    - vtoggle
+  votelist:
+    description: A command
+    aliases: vlist
+  voteall:
+    description: A command
+    aliases: vall
+  votechoices:
+    description: A command
+    alaises: vchoices
+  votegivepoints:
+    description: A command
+    alaises: vgivepoints
+  adminvotehelp:
+    description: Open adminvote help
+    aliases: avhelp
+  adminvote?:
+    description: Open adminvote help
+    aliases: av?
+  adminvotereport:
+    description: Command Alias
+    aliases: avreport
+  adminvoteperms:
+    description: Command Alias
+    aliases: avperms
+  adminvotereload:
+    description: Command Alias
+    aliases: avreload
+  adminvotetestreward:
+    description: Command Alias
+    aliases: avtestreward
+  adminvoteversion:
+    description: Command Alias
+    aliases: avversion
+  adminvotesites:
+    description: Command Alias
+    aliases: avsites
+  adminvoterewards:
+    description: Command Alias
+    aliases: avrewards
+  adminvoteuuid:
+    description: Command Alias
+    aliases: avuuid
+  adminvotevotesite:
+    description: Command Alias
+    aliases: avvotesite
+  adminvoteconfig:
+    description: Command Alias
+    aliases: avconfig
+  adminvoteupdatecheck:
+    description: Command Alias
+    aliases: avupdatecheck
+  adminvotevote:
+    description: Command Alias
+    aliases:
+    - avvote
+    - fakevote
+  adminvotegui:
+    description: Command Alias
+    aliases: avgui
+  adminvotegivereward:
+    description: Command Alias
+    aliases: avgivereward
+  adminvoteconvertfromdata:
+    description: Command Alias
+    aliases: avconvertfromdata
+  adminvoteonverttodata:
+    description: Command Alias
+    aliases: avconverttodata
+  adminvotecleartotal:
+    description: Command Alias
+  adminvotebackgroundupdate:
+    description: Command Alias
+    aliases: avbackgroundupdate
+  adminvoteclearcache:
+    description: Command Alias
+    aliases: avclearcache
+  adminvoteservicesites:
+    description: Command Alias
+    aliases: avservicesites
+  adminvotevoteparty:
+    description: Command Alias
+    aliases: avvoteparty
+  adminvotechoices:
+    description: Command Alias
+    aliases: avchoices
+  adminvotereloadall:
+    description: Command Alias
+    aliases: avreloadall
+  adminvotepermsplayer:
+    description: Command Alias
+    aliases: avpermsplayer
+  adminvoteresyncmilestonesalreadygiven:
+    description: Command Alias
+    aliases: avresyncmilestonesalreadygiven
+  votesetprimaryaccount:
+    description: Command Alias
+  adminvoteclearofflinevotes:
+    description: Command Alias
+    aliases: avclearofflinevotes
+  adminvotegiveall:
+    description: Command Alias
+    aliases: avgiveall
+  adminvotegiveallonline:
+    description: Command Alias
+    aliases: avgiveallonline
+  adminvoteforcetimechanged:
+    description: Command Alias
+    aliases: avforcetimechanged
+  adminvoteplayername:
+    description: Command Alias
+    aliases: avplayername
+  adminvoteresyncmilestones:
+    description: Command Alias
+    aliases: avresyncmilestones
+  adminvoteclearofflinerewards:
+    description: Command Alias
+    aliases: avclearofflinerewards
+  adminvoteuserremove:
+    description: Command Alias
+    aliases: avuserremove
+  adminvotepurge:
+    description: Command Alias
+    aliases: avpurge
+  adminvotejavascript:
+    description: Command Alias
+    aliases: avjavascript
+  adminvotestatus:
+    description: Command Alias
+    aliases: avstatus
+  adminvotetest:
+    description: Command Alias
+    aliases: avtest
+  adminvoteplaceholders:
+    description: Command Alias
+    aliases: avplaceholders
+  adminvotedownloadjenkins:
+    description: Command Alias
+    aliases: avdownloadjenkins
+  adminvotesetrequestmethod:
+    description: Command Alias
+    aliases: avsetrequestmethod
+  adminvoteuser:
+    description: Command Alias
+    aliases: avuser
+  adminvotecurrentplugintime:
+    description: Command Alias
+    aliases: avcurrentplugintime
+  adminvoteresetpoints:
+    description: Command Alias
+    aliases: avresetpoints
+  adminvoteruncmd:
+    description: Command Alias
+    aliases: avruncmd
+  adminvoteuseruuidremove:
+    description: Command Alias
+    aliases: avuseruuidremove
+  adminvoteedit:
+    description: Command Alias
+    aliases: avedit
+  adminvoteresetmilestonecount:
+    description: Command Alias
+    aliases: avresetmilestonecount
+permissions:
+  VotingPlugin.Player:
+    description: Allows basic access player commands
+  VotingPlugin.Mod:
+    description: Allows mod commands
+  VotingPlugin.Admin:
+    description: Allows admincommands
+  VotingPlugin.Admin.Debug:
+    description: Permission to view debug info ingame
+  VotingPlugin.TopVoter.Ignore:
+    description: Allows you to be exempt from top voter
+  VotingPlugin.NoRemind:
+    description: Ignore vote reminding
+    default: false
+  VotingPlugin.BypassWaitUntilVoteDelay:
+    description: Bypass WaitUntilVoteDelay
+    default: false
+  VotingPlugin.Sign.Create:
+    description: Permission to create sign
+  VotingPlugin.Admin.GenerateServiceSite:
+    description: Permission for generating votesite message
+  VotingPlugin.Login.RemindVotes:
+    description: Permission to allow timed reminders
+  VotingPlugin.Login.RemindVotes.All:
+    description: Remind if player can vote on all votesites, rather than any
+    default: false

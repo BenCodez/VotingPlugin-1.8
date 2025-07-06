@@ -1,21 +1,24 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bencodez</groupId>
 	<artifactId>votingplugin-1.8</artifactId>
-	<version>6.13</version>
+	<version>6.18.7_1.8</version>
 	<packaging>jar</packaging>
 	<name>VotingPlugin</name>
 	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 		<github.global.server>github</github.global.server>
 		<project.build.sourceEncoding>Cp1252</project.build.sourceEncoding>
 		<build.number>NOTSET</build.number>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+		<maven.compiler.release>8</maven.compiler.release>
 	</properties>
 	<build>
 		<resources>
 			<resource>
-				<directory>Resources</directory>
+				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
 				<includes>
 					<include>plugin.yml</include>
@@ -24,11 +27,12 @@
 				</includes>
 			</resource>
 			<resource>
-				<directory>Resources</directory>
+				<directory>src/main/resources</directory>
 				<filtering>false</filtering>
 			</resource>
 		</resources>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -59,16 +63,6 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<finalName>${project.name}</finalName>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>
 				<version>1.18.20.0</version>
@@ -82,7 +76,7 @@
 						<configuration>
 							<addOutputDirectory>false</addOutputDirectory>
 							<outputDirectory>${project.basedir}/target/delombok</outputDirectory>
-							<sourceDirectory>${project.basedir}/src</sourceDirectory>
+							<sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
 						</configuration>
 					</execution>
 				</executions>
@@ -90,7 +84,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.4.3</version>
+				<version>3.6.0</version>
 				<configuration>
 					<shadedArtifactAttached>false</shadedArtifactAttached>
 					<minimizeJar>true</minimizeJar>
@@ -101,11 +95,30 @@
 								<include>**</include>
 							</includes>
 						</filter>
+					    <filter>
+                            <artifact>*:*</artifact>
+                              <excludes>
+                                 <exclude>META-INF/*.SF</exclude>
+                                 <exclude>META-INF/*.DSA</exclude>
+                                 <exclude>META-INF/*.RSA</exclude>
+                              </excludes>
+                        </filter>
 					</filters>
 					<relocations>
 						<relocation>
+							<pattern>com.tcoded.folialib</pattern>
+							<shadedPattern>
+								${project.groupId}.votingplugin.simpleapi.folialib</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>com.bencodez.simpleapi</pattern>
+							<shadedPattern>
+								${project.groupId}.votingplugin.simpleapi</shadedPattern>
+						</relocation>
+						<relocation>
 							<pattern>com.bencodez.advancedcore</pattern>
-							<shadedPattern>${project.groupId}.votingplugin.advancedcore</shadedPattern>
+							<shadedPattern>
+								${project.groupId}.votingplugin.advancedcore</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>net.pl3x.bukkit.chatapi</pattern>
@@ -113,24 +126,30 @@
 						</relocation>
 						<relocation>
 							<pattern>me.mrten.mysqlapi</pattern>
-							<shadedPattern>${project.groupId}.votingplugin.mysqlapi</shadedPattern>
+							<shadedPattern>
+								${project.groupId}.votingplugin.mysqlapi</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.zaxxer.HikariCP</pattern>
-							<shadedPattern>${project.groupId}.votingplugin.HikariCP</shadedPattern>
+							<shadedPattern>
+								${project.groupId}.votingplugin.HikariCP</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.zaxxer.hikari</pattern>
-							<shadedPattern>${project.groupId}.votingplugin.hikari</shadedPattern>
+							<shadedPattern>
+								${project.groupId}.votingplugin.hikari</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>org.bstats</pattern>
-							<shadedPattern>${project.groupId}.votingplugin.bstats</shadedPattern>
+							<shadedPattern>
+								${project.groupId}.votingplugin.bstats</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>xyz.upperlevel.spigot</pattern>
-							<shadedPattern>${project.groupId}.votingplugin.advancedcore.xyz.upperlevel.spigot</shadedPattern>
+							<shadedPattern>
+								${project.groupId}.votingplugin.advancedcore.xyz.upperlevel.spigot</shadedPattern>
 						</relocation>
+
 					</relocations>
 				</configuration>
 				<executions>
@@ -141,7 +160,8 @@
 						</goals>
 						<configuration>
 							<artifactSet>
-								<!-- Lets exclude google code, because the server already has this 
+								<!-- Lets exclude google code, because the
+								server already has this 
 									code in it (guava, etc) -->
 								<excludes>
 									<exclude>com.google.*:*</exclude>
@@ -158,31 +178,6 @@
 									</excludes>
 								</filter>
 							</filters>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.1.0</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>install</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${user.home}/Documents/Test Server/plugins</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/target</directory>
-									<includes>
-										<include>VotingPlugin.jar</include>
-									</includes>
-								</resource>
-							</resources>
-							<overwrite>true</overwrite>
 						</configuration>
 					</execution>
 				</executions>
@@ -210,6 +205,15 @@
 			<id>bencodez repo</id>
 			<url>https://nexus.bencodez.com/repository/maven-public/</url>
 		</repository>
+		<repository>
+			<id>papermc</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
+		</repository>
+		<repository>
+			<id>placeholderapi</id>
+			<url>
+				https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -221,13 +225,13 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.2</version>
+			<version>1.18.38</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-api</artifactId>
-			<version>1.17-R0.1-SNAPSHOT</version>
+			<version>1.21-R0.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -245,40 +249,59 @@
 		<dependency>
 			<groupId>com.velocitypowered</groupId>
 			<artifactId>velocity-api</artifactId>
-			<version>1.1.5</version>
+			<version>3.1.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-velocity</artifactId>
-			<version>2.2.1</version>
+			<version>3.1.0</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>me.clip</groupId>
+			<artifactId>placeholderapi</artifactId>
+			<version>2.11.6</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.bencodez</groupId>
 			<artifactId>advancedcore-1.8</artifactId>
-			<version>LATEST</version>
+			<version>3.7.17_1.8</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
-			<id>prod2</id>
+			<id>default</id>
 			<properties>
-				<build.profile.id>prod2</build.profile.id>
+				<build.profile.id>default</build.profile.id>
 			</properties>
-			<distributionManagement>
-				<repository>
-					<id>internal.repo</id>
-					<name>Temporary Staging Repository</name>
-					<url>file://${project.build.directory}/mvn-repo</url>
-				</repository>
-			</distributionManagement>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>3.4.2</version>
+						<configuration>
+							<archive>
+								<manifestEntries>
+									<paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+								</manifestEntries>
+							</archive>
+							<finalName>${project.name}</finalName>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 		<profile>
 			<id>deploy-snapshot</id>
 			<properties>
-				<build.profile.id>deploy-snapshot</build.profile.id>
+				<build.profile.id>dev-snapshot</build.profile.id>
 			</properties>
 			<distributionManagement>
 				<snapshotRepository>
@@ -287,15 +310,67 @@
 				</snapshotRepository>
 				<repository>
 					<id>nexus</id>
-					<url>https://nexus.bencodez.com/repository/maven-snapshots/</url>
+					<url>https://nexus.bencodez.com/repository/maven-releases/</url>
 				</repository>
 			</distributionManagement>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>3.4.2</version>
+						<configuration>
+							<archive>
+								<manifestEntries>
+									<paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+								</manifestEntries>
+							</archive>
+							<finalName>
+								${project.name}</finalName>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>com.coderplus.maven.plugins</groupId>
+						<artifactId>copy-rename-maven-plugin</artifactId>
+						<version>1.0.1</version>
+						<executions>
+							<execution>
+								<id>copy-file</id>
+								<phase>install</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<sourceFile>
+										${project.basedir}/target/${project.name}.jar</sourceFile>
+									<destinationFile>
+										${project.basedir}/target/${project.name}-${build.number}.jar</destinationFile>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.11.2</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<phase>deploy</phase>
+								<configuration>
+									<sourcepath>
+										${project.basedir}/target/delombok</sourcepath>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-deploy-plugin</artifactId>
-						<version>3.0.0-M1</version>
+						<version>3.1.4</version>
 						<configuration>
 							<skip>true</skip>
 						</configuration>
@@ -303,7 +378,7 @@
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.5.1</version>
+						<version>1.7.0</version>
 						<executions>
 							<execution>
 								<id>default-deploy</id>
@@ -318,6 +393,125 @@
 							<nexusUrl>https://nexus.bencodez.com/nexus/</nexusUrl>
 							<skipStaging>true</skipStaging>
 						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>javadoc</id>
+			<properties>
+				<build.profile.id>javadoc</build.profile.id>
+			</properties>
+			<distributionManagement>
+				<repository>
+					<id>internal.repo</id>
+					<name>Temporary Staging Repository</name>
+					<url>file://${project.build.directory}/mvn-repo</url>
+				</repository>
+			</distributionManagement>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>3.4.2</version>
+						<configuration>
+							<archive>
+								<manifestEntries>
+									<paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+								</manifestEntries>
+							</archive>
+							<finalName>${project.name}</finalName>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.11.2</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<phase>deploy</phase>
+								<configuration>
+									<sourcepath>
+										${project.basedir}/target/delombok</sourcepath>
+									<outputDirectory>
+										${project.basedir}/target/apidocs</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.coderplus.maven.plugins</groupId>
+						<artifactId>copy-rename-maven-plugin</artifactId>
+						<version>1.0.1</version>
+						<executions>
+							<execution>
+								<id>copy-file</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<sourceFile>
+										${project.basedir}/target/${project.name}.jar</sourceFile>
+									<destinationFile>
+										${project.basedir}/target/${project.name}-${project.version}.jar</destinationFile>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>3.4.2</version>
+						<configuration>
+							<archive>
+								<manifestEntries>
+									<paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+								</manifestEntries>
+							</archive>
+							<finalName>${project.name}</finalName>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>3.3.1</version>
+						<executions>
+							<execution>
+								<id>copy-resources</id>
+								<phase>install</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>
+										${user.home}/Documents/Test_Server/plugins</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${basedir}/target</directory>
+											<includes>
+												<include>VotingPlugin.jar</include>
+											</includes>
+										</resource>
+									</resources>
+									<overwrite>true</overwrite>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
@@ -341,8 +535,41 @@
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>3.4.2</version>
+						<configuration>
+							<archive>
+								<manifestEntries>
+									<paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+								</manifestEntries>
+							</archive>
+							<finalName>${project.name}</finalName>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>com.coderplus.maven.plugins</groupId>
+						<artifactId>copy-rename-maven-plugin</artifactId>
+						<version>1.0.1</version>
+						<executions>
+							<execution>
+								<id>copy-file</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<sourceFile>
+										${project.basedir}/target/${project.name}.jar</sourceFile>
+									<destinationFile>
+										${project.basedir}/target/${project.name}-${project.version}.jar</destinationFile>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.10.4</version>
+						<version>3.11.2</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
@@ -351,7 +578,8 @@
 								</goals>
 								<phase>deploy</phase>
 								<configuration>
-									<sourcepath>${project.basedir}/target/delombok</sourcepath>
+									<sourcepath>
+										${project.basedir}/target/delombok</sourcepath>
 								</configuration>
 							</execution>
 						</executions>
@@ -359,7 +587,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-deploy-plugin</artifactId>
-						<version>3.0.0-M1</version>
+						<version>3.1.4</version>
 						<configuration>
 							<skip>true</skip>
 						</configuration>
@@ -367,7 +595,7 @@
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.5.1</version>
+						<version>1.7.0</version>
 						<executions>
 							<execution>
 								<id>default-deploy</id>
@@ -382,33 +610,6 @@
 							<nexusUrl>https://nexus.bencodez.com/nexus/</nexusUrl>
 							<skipStaging>true</skipStaging>
 						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>com.github.github</groupId>
-						<artifactId>site-maven-plugin</artifactId>
-						<version>0.12</version>
-						<executions>
-							<execution>
-								<id>javadoc</id>
-								<goals>
-									<goal>site</goal>
-								</goals>
-								<phase>deploy</phase>
-								<configuration>
-									<message>Maven javadoc for ${project.version}</message>
-									<noJekyll>true</noJekyll>
-									<outputDirectory>${project.build.directory}/apidocs
-									</outputDirectory>
-									<branch>refs/heads/gh-pages</branch>
-									<includes>
-										<include>**/*</include>
-									</includes>
-									<repositoryName>VotingPlugin</repositoryName>
-									<repositoryOwner>BenCodez</repositoryOwner>
-									<server>github</server>
-								</configuration>
-							</execution>
-						</executions>
 					</plugin>
 				</plugins>
 			</build>
