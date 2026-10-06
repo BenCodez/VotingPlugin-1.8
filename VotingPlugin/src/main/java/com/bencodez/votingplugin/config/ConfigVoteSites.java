@@ -279,6 +279,20 @@ public class ConfigVoteSites extends YMLFile {
 		return voteSites;
 	}
 
+	/** Configured sections, including disabled or incomplete sites. This read never creates a site. */
+	public ArrayList<String> getRawVoteSiteNames() {
+		ArrayList<String> names = new ArrayList<>();
+		if (!getData().isConfigurationSection("VoteSites")) {
+			return names;
+		}
+		for (String name : getData().getConfigurationSection("VoteSites").getKeys(false)) {
+			if (getData().isConfigurationSection("VoteSites." + name)) {
+				names.add(name);
+			}
+		}
+		return names;
+	}
+
 	public ArrayList<String> getVoteSitesNames(boolean checkEnabled) {
 		ArrayList<String> siteNames = new ArrayList<>();
 		if (getData().isConfigurationSection("VoteSites")) {

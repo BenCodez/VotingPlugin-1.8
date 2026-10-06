@@ -375,11 +375,14 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 	public VoteSite getVoteSite(String site, boolean checkEnabled) {
 		String siteName = getVoteSiteName(checkEnabled, site);
 		for (VoteSite voteSite : getVoteSites()) {
+			if (checkEnabled && !voteSite.isEnabled()) {
+				continue;
+			}
 			if (voteSite.getKey().equalsIgnoreCase(siteName) || voteSite.getDisplayName().equals(siteName)) {
 				return voteSite;
 			}
 		}
-		if (configFile.isAutoCreateVoteSites() && !configVoteSites.getVoteSitesNames(false).contains(siteName)) {
+		if (configFile.isAutoCreateVoteSites() && !hasConfiguredVoteSite(site, siteName)) {
 			configVoteSites.generateVoteSite(siteName);
 			return new VoteSite(plugin, siteName.replace(".", "_"));
 		}
@@ -387,7 +390,39 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 
 	}
 
+	private String getConfiguredVoteSiteName(String... identifiers) {
+		if (identifiers == null) {
+			return null;
+		}
+		ArrayList<String> names = getConfigVoteSites().getRawVoteSiteNames();
+		for (String identifier : identifiers) {
+			if (identifier == null || identifier.isEmpty()) {
+				continue;
+			}
+			String normalized = identifier.replaceAll("[\\.\\s]+", "_");
+			String legacyNormalized = identifier.replace(".", "_").replace(" ", "_");
+			for (String name : names) {
+				String service = getConfigVoteSites().getServiceSite(name);
+				String display = getConfigVoteSites().getDisplayName(name);
+				if (name.equalsIgnoreCase(identifier) || name.equalsIgnoreCase(normalized)
+						|| name.equalsIgnoreCase(legacyNormalized)
+						|| (service != null && !service.isEmpty() && service.equalsIgnoreCase(identifier))
+						|| (display != null && !display.isEmpty() && display.equalsIgnoreCase(identifier))) {
+					return name;
+				}
+			}
+		}
+		return null;
+	}
+
+	public boolean hasConfiguredVoteSite(String... identifiers) {
+		return getConfiguredVoteSiteName(identifiers) != null;
+	}
+
 	public String getVoteSiteName(boolean checkEnabled, String... urls) {
+		if (urls == null) {
+			return null;
+		}
 		ArrayList<String> sites = getConfigVoteSites().getVoteSitesNames(checkEnabled);
 
 		for (String url : urls) {
@@ -409,6 +444,13 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 
 					}
 				}
+			}
+		}
+
+		if (!checkEnabled) {
+			String configured = getConfiguredVoteSiteName(urls);
+			if (configured != null) {
+				return configured;
 			}
 		}
 
