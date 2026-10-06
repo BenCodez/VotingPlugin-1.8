@@ -3673,3 +3673,37 @@ The wider numeric-declaration, UUID, headless and upstream ledger scope remains
 unfinished. An earlier intermittent inventory-test failure remains recorded with its
 unchanged focused/full reruns; no assertion was weakened. No final independent review,
 push, PR or overall readiness claim has occurred.
+
+
+## Exact retained numeric schema dependency checkpoint
+
+Exact isolated AdvancedCore source commit: `cc0e92358c9777b77b88ab40a9631ef62faea7a0`.
+The native registered-string SQL adapter now reconciles integer/decimal declarations rather
+than accidentally retaining a narrower physical numeric type. Exact decimal scale reduction
+validates stored values and defaults under an owned table fence; it rejects fractional loss
+and does not acknowledge failed DDL or cleanup. Existing Java APIs, configuration keys,
+serialized data and proxy payloads are unchanged by this consumer checkpoint.
+Connector/J5 initialized reconnect modes, unavailable ownership evidence and Galera are
+explicitly rejected for this new fenced operation. Other driver contracts and floating/BIT/
+cross-family proofs remain unfinished; this checkpoint does not claim whole-main parity.
+See AdvancedCore docs/java8-sync.md for its driver, privilege and cleanup decisions.
+
+The producer was built with the actual JDK8u504 and workspace-local Maven repository:
+630 unit +63 artifact =693 PASS, SHA256
+`e98bb86cdb45a45b482f867e260c63b0755b0709956e7d58152fcb4c74ddc2b2`.
+That target matched the installed com.bencodez:advancedcore-1.8:3.7.17_1.8 artifact byte-for-byte
+before the consumer build. The consumer used actualJava8 with
+`mvn -B -f VotingPlugin/pom.xml -Dmaven.resolver.transport=wagon
+-Dmaven.repo.local=/workspace/votingplugin-1.8-port-workspace/.m2/repository
+-Djava.io.tmpdir=/workspace/votingplugin-1.8-port-workspace/runtime/tmp clean verify`:
+45 unit +1 artifact =46 PASS, zero failures/errors/skips, SHA256
+`3292145dda2552d62117fa42ee2316f56c7f58e4e664d315ee0b653228566de7`.
+All2458 consumer base classes have major<=52. The connector used for new producer tests is
+strictly test-scoped and absent from the production AdvancedCore jar.
+
+Five native packaged-code MariaDB cases pass: exact conversion, source rounding rejection,
+default rounding rejection, competing-writer fencing and connection loss before ALTER.
+Nine exact-consumer Java8/Spigot1.8.8 SQLite/schema/cache/startup/shutdown acceptance checks
+pass. MySQL user-cache runtime, every driver/pool combination, full vote/proxy acceptance,
+remaining upstream ledger work and final independent review are not proven by these checks.
+No push, PR or whole-backport readiness is claimed.
