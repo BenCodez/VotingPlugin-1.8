@@ -208,3 +208,11 @@ local AdvancedCore build: AdvancedCore `clean install` passes63 unit+3artifact,
 and VotingPlugin `clean verify` passes14 unit+1artifact, zero failures/errors/skips.
 This adds Java8 command/date unit coverage; the preceding live casing acceptance
 used the scheduler cohort artifact and is not claimed as a live run of MiscUtils.
+
+AdvancedCore's subsequent checked SQL API foundation validates with69 unit and
+7 packaged-artifact tests, zero failures/errors/skips; VotingPlugin `clean verify`
+against that exact local artifact passes14 unit+1artifact with zero failures,
+errors or skips (`vp-checked-write-autocommit-verify.log`). The new SQL methods
+have real SQLite and isolated MariaDB acceptance. Legacy UserData/cache callers
+remain under coordinated integration, so this is not a claim of cache write
+failure recovery or changed vote-processing semantics.
