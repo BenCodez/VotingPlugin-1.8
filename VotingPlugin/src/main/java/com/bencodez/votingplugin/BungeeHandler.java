@@ -183,6 +183,10 @@ public class BungeeHandler implements Listener {
 
 		method = BungeeMethod.getByName(plugin.getBungeeSettings().getBungeeMethod());
 
+		// Restore before any listener/task can publish newer state or startup can fail.
+		bungeeVotePartyCurrent = plugin.getServerData().getBungeeVotePartyCurrent();
+		bungeeVotePartyRequired = plugin.getServerData().getBungeeVotePartyRequired();
+
 		plugin.getLogger().info("Using BungeeMethod: " + method.toString());
 
 		loadGlobalMysql();
@@ -531,7 +535,9 @@ public class BungeeHandler implements Listener {
 
 				@Override
 				protected void onMessage(String channel, String[] message) {
-					plugin.getLogger().info(channel + ArrayUtils.makeStringList(ArrayUtils.convert(message)));
+					if (plugin.getBungeeSettings().isBungeeDebug()) {
+						plugin.debug(channel + " " + ArrayUtils.makeStringList(ArrayUtils.convert(message)));
+					}
 					if (message.length > 0) {
 						ArrayList<String> list = new ArrayList<>();
 						for (int i = 1; i < message.length; i++) {
@@ -562,9 +568,6 @@ public class BungeeHandler implements Listener {
 						new File(plugin.getDataFolder(), "secretkey.key"));
 				plugin.getPluginMessaging().setEncryptionHandler(encryptionHandler);
 			}
-
-			bungeeVotePartyCurrent = plugin.getServerData().getBungeeVotePartyCurrent();
-			bungeeVotePartyRequired = plugin.getServerData().getBungeeVotePartyRequired();
 
 			plugin.getPluginMessaging().setDebug(plugin.getBungeeSettings().isBungeeDebug());
 

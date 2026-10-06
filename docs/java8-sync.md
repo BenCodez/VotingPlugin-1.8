@@ -324,3 +324,40 @@ byte, the fixture-only plugin removed, and both owned server runs are stopped.
 Evidence is under direct-write-build-results.json and DirectWriteSQL/Flat live
 JSON/logs in the isolated workspace. Live MySQL/proxy and failed-shutdown behavior
 remain unverified for this cohort.
+
+## Proxy VoteParty startup and Redis diagnostics
+
+Pinned upstream fd4c6a3954baca3c6ed91478120bf9a29d453ad4 restores backend
+BungeeVotePartyCurrent/Required for every transport, instead of only plugin
+messaging. The fork restores them before any transport initialization so an
+interrupted startup cannot persist sentinel -2 values over saved counts, and
+a listener cannot publish new counts before the restoration overwrites them.
+Five deterministic failure-injection regressions (one per existing transport)
+prove shutdown preserves17/50 after early initialization failure; all five
+failed before the fix. No schema, payload or defaults change.
+
+Pinned upstream758632b5a5900859860edeece0638f345a26879f's exact debug guard
+is ported: received Redis payload diagnostics require BungeeDebug and use the
+plugin debug logger; message routing remains unchanged. This does not claim
+live Redis/socket/MQTT/MySQL transport acceptance.
+
+The full ledger has also gained26 exact release-metadata/empty-tree dispositions
+across both repositories. No dependency updates or runtime patches are included
+in those metadata classifications. The newer VoteStreaks section fix7510981f...
+is not classified as ported because its prerequisite feature is absent in this
+fork and still requires its behavior/configuration/reward audit.
+
+Java8 clean verify passes19 unit+1 artifact tests, zero failures/errors/skips,
+against unchanged exact AdvancedCore7ff2e714... local build (129unit+12artifact
+validation reused). Exact new consumer07da736c... has2432 base classes major<=52
+and passes controlled standalone Java8Spigot1.8.8SQLite PartySmokeSQL online
+vote/reward,points10,total1,graceful stop/restart. The new transport-startup
+failure behavior is proven by deterministic tests; the standalone smoke is not
+live Redis/MQTT/socket acceptance.
+
+Five exact provided-Spigot-API-only upgrade commits and15 patches confined
+to the excluded Velocity host package are now recorded as modern-only omissions
+in the detailed workspace ledger. Velocity remains outside the Java8 runtime:
+compiler and shade exclusions apply, its descriptor is absent, and the current
+compatible-runtime contract does not advertise it. No shared proxy, Bukkit or
+Bungee changes are included in those host-only omission classifications.
