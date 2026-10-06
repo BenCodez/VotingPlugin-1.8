@@ -66,6 +66,12 @@ public class BungeeHandler implements Listener {
 	private SocketHandler socketHandler;
 
 	private GlobalDataHandler globalDataHandler;
+	private boolean ownsGlobalMysql;
+	private final Object globalLifecycle = new Object();
+	private final ThreadLocal<Integer> globalWorkDepth = ThreadLocal.withInitial(() -> 0);
+	private boolean acceptingGlobalWork = true;
+	private boolean globalTransition;
+	private int activeGlobalWork;
 
 	@Getter
 	private ScheduledExecutorService timer;
@@ -83,39 +89,43 @@ public class BungeeHandler implements Listener {
 	}
 
 	public void checkGlobalData() {
-		HashMap<String, DataValue> data = globalDataHandler.getExact(plugin.getBungeeSettings().getServer());
-		// plugin.debug(data.toString());
+		try (GlobalWork work = acquireGlobalWork()) {
+			if (work == null) return;
+			GlobalDataHandler globalDataHandler = work.handler;
+			HashMap<String, DataValue> data = globalDataHandler.getExact(plugin.getBungeeSettings().getServer());
+			// plugin.debug(data.toString());
 
-		if (data.containsKey("ForceUpdate")) {
-			boolean b = checkGlobalDataTimeValue(data.get("ForceUpdate"));
-			if (b) {
-				if (plugin.getStorageType().equals(UserStorage.MYSQL)) {
-					plugin.getMysql().clearCacheBasic();
+			if (data.containsKey("ForceUpdate")) {
+				boolean b = checkGlobalDataTimeValue(data.get("ForceUpdate"));
+				if (b) {
+					if (plugin.getStorageType().equals(UserStorage.MYSQL)) {
+						plugin.getMysql().clearCacheBasic();
+					}
+					plugin.getUserManager().getDataManager().clearCache();
+					plugin.setUpdate(true);
+					plugin.update();
+					globalDataHandler.setBoolean(plugin.getBungeeSettings().getServer(), "ForceUpdate", false);
 				}
-				plugin.getUserManager().getDataManager().clearCache();
-				plugin.setUpdate(true);
-				plugin.update();
-				globalDataHandler.setBoolean(plugin.getBungeeSettings().getServer(), "ForceUpdate", false);
 			}
-		}
 
-		boolean forceUpdate = false;
+			boolean forceUpdate = false;
 
-		if (checkGlobalDataTime(TimeType.MONTH, data)) {
-			forceUpdate = true;
-		}
-		if (checkGlobalDataTime(TimeType.WEEK, data)) {
-			forceUpdate = true;
-		}
-		if (checkGlobalDataTime(TimeType.DAY, data)) {
-			forceUpdate = true;
-		}
+			if (checkGlobalDataTime(TimeType.MONTH, data)) {
+				forceUpdate = true;
+			}
+			if (checkGlobalDataTime(TimeType.WEEK, data)) {
+				forceUpdate = true;
+			}
+			if (checkGlobalDataTime(TimeType.DAY, data)) {
+				forceUpdate = true;
+			}
 
-		if (forceUpdate) {
-			HashMap<String, DataValue> dataToSet = new HashMap<>();
-			dataToSet.put("FinishedProcessing", new DataValueBoolean(true));
-			dataToSet.put("Processing", new DataValueBoolean(false));
-			globalDataHandler.setData(plugin.getBungeeSettings().getServer(), dataToSet);
+			if (forceUpdate) {
+				HashMap<String, DataValue> dataToSet = new HashMap<>();
+				dataToSet.put("FinishedProcessing", new DataValueBoolean(true));
+				dataToSet.put("Processing", new DataValueBoolean(false));
+				globalDataHandler.setData(plugin.getBungeeSettings().getServer(), dataToSet);
+			}
 		}
 	}
 
@@ -129,6 +139,12 @@ public class BungeeHandler implements Listener {
 	 */
 
 	public boolean checkGlobalDataTime(TimeType type, HashMap<String, DataValue> data) {
+		try (GlobalWork work = acquireGlobalWork()) {
+			return work != null && checkGlobalDataTimeOwned(work.handler, type, data);
+		}
+	}
+
+	private boolean checkGlobalDataTimeOwned(GlobalDataHandler globalDataHandler, TimeType type, HashMap<String, DataValue> data) {
 		boolean isProcessing = false;
 		if (data.containsKey(type.toString())) {
 
@@ -164,31 +180,114 @@ public class BungeeHandler implements Listener {
 		return Boolean.valueOf(data.getString());
 	}
 
-	/** Stop ingress and global-data producers without closing their database underneath accepted work. */
+	/** Stop new polling and wait for scheduled and direct protocol-triggered work. */
 	public void stopAcceptingMessages() {
-		if (socketHandler != null) {
-			socketHandler.closeConnection();
+		retireGlobalWork(true, () -> {});
+	}
+
+	/** Drain borrowed-pool users before AdvancedCore can replace the main storage provider. */
+	void stopGlobalDataForStorageReload() {
+		retireGlobalWork(false, () -> {});
+	}
+
+	void closeGlobalDataForStorageReload() {
+		retireGlobalWork(false, () -> {
+			boolean hadProvider = globalDataHandler != null;
+			closeGlobalMysql();
+			if (hadProvider) plugin.getTimeChecker().setProcessingEnabled(true);
+		});
+	}
+
+	private void stopTransportIngress() {
+		if (socketHandler != null) socketHandler.closeConnection();
+		if (clientHandler != null) clientHandler.stopConnection();
+	}
+
+	public void close() {
+		retireGlobalWork(true, () -> {
+			plugin.getServerData().setBungeeVotePartyCurrent(bungeeVotePartyCurrent);
+			plugin.getServerData().setBungeeVotePartyRequired(bungeeVotePartyRequired);
+			closeGlobalMysql();
+		});
+	}
+
+	private GlobalWork acquireGlobalWork() {
+		synchronized (globalLifecycle) {
+			if (globalDataHandler == null || (!acceptingGlobalWork && globalWorkDepth.get() == 0)) return null;
+			activeGlobalWork++;
+			globalWorkDepth.set(globalWorkDepth.get() + 1);
+			return new GlobalWork(globalDataHandler);
 		}
-		if (clientHandler != null) {
-			clientHandler.stopConnection();
-		}
-		if (timer != null) {
-			timer.shutdown();
-			try {
-				if (!timer.awaitTermination(5, TimeUnit.SECONDS)) throw new IllegalStateException("Global-data work has not settled; provider remains open");
-			} catch (InterruptedException interrupted) {
-				Thread.currentThread().interrupt();
-				throw new IllegalStateException("Global-data shutdown interrupted; provider remains open", interrupted);
+	}
+
+	private final class GlobalWork implements AutoCloseable {
+		private final GlobalDataHandler handler;
+		private final Thread thread = Thread.currentThread();
+		private boolean released;
+		GlobalWork(GlobalDataHandler handler) { this.handler = handler; }
+		@Override public void close() {
+			if (Thread.currentThread() != thread) throw new IllegalStateException("Global-data work belongs to another thread");
+			synchronized (globalLifecycle) {
+				if (released) return;
+				released = true;
+				int depth = globalWorkDepth.get();
+				if (depth == 1) globalWorkDepth.remove(); else globalWorkDepth.set(depth - 1);
+				activeGlobalWork--;
+				globalLifecycle.notifyAll();
 			}
 		}
 	}
 
-	public void close() {
-		stopAcceptingMessages();
-		plugin.getServerData().setBungeeVotePartyCurrent(bungeeVotePartyCurrent);
-		plugin.getServerData().setBungeeVotePartyRequired(bungeeVotePartyRequired);
-		if (globalDataHandler != null) {
-			globalDataHandler.getGlobalMysql().close();
+	private void retireGlobalWork(boolean stopIngress, Runnable afterDrain) {
+		synchronized (globalLifecycle) {
+			if (globalWorkDepth.get() != 0) throw new IllegalStateException("Cannot retire global data from its admitted work");
+			if (globalTransition) throw new IllegalStateException("Global-data retirement is already in progress");
+			globalTransition = true;
+			acceptingGlobalWork = false;
+		}
+		long started = System.nanoTime();
+		long grace = TimeUnit.SECONDS.toNanos(5);
+		try {
+			if (stopIngress) stopTransportIngress();
+			if (timer != null) {
+				timer.shutdown();
+				try {
+					if (!timer.awaitTermination(Math.max(0L, grace - (System.nanoTime() - started)), TimeUnit.NANOSECONDS)) {
+						throw new IllegalStateException("Global-data work has not settled; provider remains open");
+					}
+				} catch (InterruptedException interrupted) {
+					Thread.currentThread().interrupt();
+					throw new IllegalStateException("Global-data shutdown interrupted; provider remains open", interrupted);
+				}
+			}
+			synchronized (globalLifecycle) {
+				while (activeGlobalWork != 0) {
+					long remaining = grace - (System.nanoTime() - started);
+					if (remaining <= 0) throw new IllegalStateException("Direct global-data work has not settled; provider remains open");
+					try { TimeUnit.NANOSECONDS.timedWait(globalLifecycle, remaining); }
+					catch (InterruptedException interrupted) {
+						Thread.currentThread().interrupt();
+						throw new IllegalStateException("Global-data retirement interrupted; provider remains open", interrupted);
+					}
+				}
+			}
+			afterDrain.run();
+		} finally {
+			synchronized (globalLifecycle) { globalTransition = false; }
+		}
+	}
+
+	private void closeGlobalMysql() {
+		// Ownership belongs to this provider generation, never to reloaded configuration.
+		if (globalDataHandler != null && ownsGlobalMysql) globalDataHandler.getGlobalMysql().close();
+		synchronized (globalLifecycle) { globalDataHandler = null; ownsGlobalMysql = false; }
+	}
+
+	private void updateGlobalLastOnline() {
+		try (GlobalWork work = acquireGlobalWork()) {
+			if (work == null) return;
+			work.handler.setString(plugin.getBungeeSettings().getServer(), "LastOnline",
+					"" + LocalDateTime.now().atZone(ZoneOffset.UTC).toInstant().toEpochMilli());
 		}
 	}
 
@@ -658,95 +757,19 @@ public class BungeeHandler implements Listener {
 	private MqttHandler mqttHandler;
 
 	public void loadGlobalMysql() {
-		if (plugin.getBungeeSettings().isGloblalDataEnabled()) {
-			if (timer != null) {
-				timer.shutdown();
-				try {
-					timer.awaitTermination(5, TimeUnit.SECONDS);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				timer.shutdownNow();
+		retireGlobalWork(false, () -> {
+			boolean hadProvider = globalDataHandler != null;
+			closeGlobalMysql();
+			if (!plugin.getBungeeSettings().isGloblalDataEnabled()) {
+				if (hadProvider) plugin.getTimeChecker().setProcessingEnabled(true);
+				return;
 			}
-			timer = Executors.newScheduledThreadPool(1);
-			timer.scheduleWithFixedDelay(new Runnable() {
-
-				@Override
-				public void run() {
-					checkGlobalData();
-				}
-			}, 60, 10, TimeUnit.SECONDS);
-			timer.scheduleWithFixedDelay(new Runnable() {
-
-				@Override
-				public void run() {
-					globalDataHandler.setString(plugin.getBungeeSettings().getServer(), "LastOnline",
-							"" + LocalDateTime.now().atZone(ZoneOffset.UTC).toInstant().toEpochMilli());
-				}
-			}, 1, 60, TimeUnit.MINUTES);
-			if (globalDataHandler != null) {
-				globalDataHandler.getGlobalMysql().close();
-			}
-			if (plugin.getBungeeSettings().isGloblalDataUseMainMySQL()
-					&& plugin.getStorageType().equals(UserStorage.MYSQL)) {
-				globalDataHandler = new GlobalDataHandler(
-						new GlobalMySQL("VotingPlugin_GlobalData", plugin.getMysql().getMysql()) {
-
-							@Override
-							public void debugEx(Exception e) {
-								plugin.debug(e);
-							}
-
-							@Override
-							public void debugLog(String text) {
-								plugin.debug(text);
-							}
-
-							@Override
-							public void info(String text) {
-								plugin.getLogger().info(text);
-							}
-
-							@Override
-							public void logSevere(String text) {
-								plugin.getLogger().severe(text);
-							}
-
-							@Override
-							public void warning(String text) {
-								plugin.getLogger().warning(text);
-							}
-						});
-			} else {
-				globalDataHandler = new GlobalDataHandler(
-						new GlobalMySQL("VotingPlugin_GlobalData", new MysqlConfigSpigot(
-								plugin.getBungeeSettings().getData().getConfigurationSection("GlobalData"))) {
-
-							@Override
-							public void debugEx(Exception e) {
-								plugin.debug(e);
-							}
-
-							@Override
-							public void debugLog(String text) {
-								plugin.debug(text);
-							}
-
-							@Override
-							public void info(String text) {
-								plugin.getLogger().info(text);
-							}
-
-							@Override
-							public void logSevere(String text) {
-								plugin.getLogger().severe(text);
-							}
-
-							@Override
-							public void warning(String text) {
-								plugin.getLogger().warning(text);
-							}
-						});
+			boolean borrowedMain = plugin.getBungeeSettings().isGloblalDataUseMainMySQL()
+					&& plugin.getStorageType().equals(UserStorage.MYSQL);
+			GlobalDataHandler loadedHandler = createGlobalDataHandler(borrowedMain);
+			synchronized (globalLifecycle) {
+				globalDataHandler = loadedHandler;
+				ownsGlobalMysql = !borrowedMain;
 			}
 			globalDataHandler.getGlobalMysql().alterColumnType("IgnoreTime", "VARCHAR(5)");
 			globalDataHandler.getGlobalMysql().alterColumnType("MONTH", "VARCHAR(5)");
@@ -757,6 +780,77 @@ public class BungeeHandler implements Listener {
 			globalDataHandler.getGlobalMysql().alterColumnType("LastUpdated", "MEDIUMTEXT");
 			globalDataHandler.getGlobalMysql().alterColumnType("ForceUpdate", "VARCHAR(5)");
 			plugin.getTimeChecker().setProcessingEnabled(false);
+			timer = createGlobalDataTimer();
+			timer.scheduleWithFixedDelay(this::checkGlobalData, 60, 10, TimeUnit.SECONDS);
+			timer.scheduleWithFixedDelay(this::updateGlobalLastOnline, 1, 60, TimeUnit.MINUTES);
+			synchronized (globalLifecycle) { acceptingGlobalWork = true; }
+		});
+	}
+
+	ScheduledExecutorService createGlobalDataTimer() {
+		return Executors.newScheduledThreadPool(1);
+	}
+
+	GlobalDataHandler createGlobalDataHandler(boolean borrowedMain) {
+		if (borrowedMain) {
+			return new GlobalDataHandler(
+					new GlobalMySQL("VotingPlugin_GlobalData", plugin.getMysql().getMysql()) {
+
+						@Override
+						public void debugEx(Exception e) {
+							plugin.debug(e);
+						}
+
+						@Override
+						public void debugLog(String text) {
+							plugin.debug(text);
+						}
+
+						@Override
+						public void info(String text) {
+							plugin.getLogger().info(text);
+						}
+
+						@Override
+						public void logSevere(String text) {
+							plugin.getLogger().severe(text);
+						}
+
+						@Override
+						public void warning(String text) {
+							plugin.getLogger().warning(text);
+						}
+					});
+		} else {
+			return new GlobalDataHandler(
+					new GlobalMySQL("VotingPlugin_GlobalData", new MysqlConfigSpigot(
+							plugin.getBungeeSettings().getData().getConfigurationSection("GlobalData"))) {
+
+						@Override
+						public void debugEx(Exception e) {
+							plugin.debug(e);
+						}
+
+						@Override
+						public void debugLog(String text) {
+							plugin.debug(text);
+						}
+
+						@Override
+						public void info(String text) {
+							plugin.getLogger().info(text);
+						}
+
+						@Override
+						public void logSevere(String text) {
+							plugin.getLogger().severe(text);
+						}
+
+						@Override
+						public void warning(String text) {
+							plugin.getLogger().warning(text);
+						}
+					});
 		}
 	}
 

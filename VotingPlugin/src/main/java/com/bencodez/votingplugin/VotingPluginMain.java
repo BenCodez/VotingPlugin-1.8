@@ -1449,7 +1449,7 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 	@Override
 	public void onPreUnLoad() {
 		if (!shutdownIngressStopped) {
-			if (bungeeSettings != null && bungeeSettings.isUseBungeecoord() && getBungeeHandler() != null) getBungeeHandler().stopAcceptingMessages();
+			if (bungeeHandler != null) bungeeHandler.stopAcceptingMessages();
 			shutdownIngressStopped = true;
 		}
 		if (timeQueueHandler != null) timeQueueHandler.stopScheduledChecks();
@@ -1467,7 +1467,7 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 	@Override
 	public void onUnLoad() {
 		onPreUnLoad();
-		if (bungeeSettings != null && bungeeSettings.isUseBungeecoord() && getBungeeHandler() != null) getBungeeHandler().close();
+		if (bungeeHandler != null) bungeeHandler.close();
 		if (timeQueueHandler != null) {
 			timeQueueHandler.save();
 		}
@@ -1558,6 +1558,8 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 	}
 
 	private void reloadPlugin(boolean userStorage) {
+		// Seal old global readers before configuration or the borrowed main pool can change.
+		if (userStorage && bungeeHandler != null) bungeeHandler.stopGlobalDataForStorageReload();
 		configFile.reloadData();
 		configFile.loadValues();
 
@@ -1574,12 +1576,10 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 		reloadAdvancedCore(userStorage);
 
 		if (bungeeSettings.isUseBungeecoord()) {
-			if (getBungeeHandler() == null) {
-				loadBungeeHandler();
-			}
-			if (userStorage) {
-				getBungeeHandler().loadGlobalMysql();
-			}
+			if (bungeeHandler == null) loadBungeeHandler();
+			else if (userStorage) bungeeHandler.loadGlobalMysql();
+		} else if (userStorage && bungeeHandler != null) {
+			bungeeHandler.closeGlobalDataForStorageReload();
 		}
 		checkYMLError();
 
