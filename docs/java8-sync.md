@@ -296,3 +296,31 @@ consumer Spigot1.8.8 SQLite acceptance (CacheRegistry) passes vote/reward,
 point commands to10,total1, graceful stop/restart persistence with no observed
 cache snapshot/write, event or linkage errors. Full ledger, final acceptance
 and independent review remain due; no PR readiness is claimed.
+
+## Checked direct setter integration
+
+Paired AdvancedCore preserves typed setter signatures and explicit backend
+selection while making uncached/queue=false writes checked. Cached direct writes
+share queued-batch ownership, flush older work first and publish/notify only
+after acknowledgement; concurrent newer queued changes remain pending/visible.
+Async rejection does not change cache state. Cached queue=true retains existing
+optimistic notification behavior. FLAT direct writes use the checked atomic
+file owner. No configuration/schema/wire change is required. Global uncached
+identity arbitration, bulk mutation and shutdown/reload admission remain under
+audit; this is not whole-backport readiness.
+
+Actual Java8 producer clean install129unit+12artifact and exact paired consumer
+clean verify14unit+1artifact all pass with zero failures/errors/skips. Base
+bytecode remains major<=52. The controlled Spigot1.8.8 fixture-only test plugin
+invokes the packaged relocated direct setter, confirms acknowledged cache state,
+and checks database persistence rather than only standard queued commands.
+SQLite DirectWriteSQL passes vote/reward, direct SetPoints7, AddPoints3=>10,
+total1, graceful stop/restart. No final whole-scope independent review or PR
+readiness is claimed.
+
+The same consumer additionally passes FLAT DirectWriteFlat with the direct setter
+and restart persistence. The temporary FLAT configuration is restored byte for
+byte, the fixture-only plugin removed, and both owned server runs are stopped.
+Evidence is under direct-write-build-results.json and DirectWriteSQL/Flat live
+JSON/logs in the isolated workspace. Live MySQL/proxy and failed-shutdown behavior
+remain unverified for this cohort.
