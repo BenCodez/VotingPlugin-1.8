@@ -202,3 +202,9 @@ this vote does not prove execution coverage of every AdvancedCore SQL branch.
 
 The complete upstream ledger remains under review. These additional validated
 fixes stay on the same two branches for one eventual full-scope PR per fork.
+
+The subsequent MiscUtils compatibility backport also validates against the exact
+local AdvancedCore build: AdvancedCore `clean install` passes63 unit+3artifact,
+and VotingPlugin `clean verify` passes14 unit+1artifact, zero failures/errors/skips.
+This adds Java8 command/date unit coverage; the preceding live casing acceptance
+used the scheduler cohort artifact and is not claimed as a live run of MiscUtils.
