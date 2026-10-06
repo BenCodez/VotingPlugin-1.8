@@ -27,3 +27,6 @@ https://github.com/BenCodez/VotingPlugin/blob/master/VotingPlugin/Resources/LICE
   LATEST - latest stable release  
  
     
+
+
+Java 8 synchronization decisions and validation: [docs/java8-sync.md](docs/java8-sync.md).
