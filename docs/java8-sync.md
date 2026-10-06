@@ -249,3 +249,19 @@ population/snapshot reconciliation, direct non-queued writes and shutdown drain
 remain under coordinated implementation. These builds and runtime samples are
 not whole-backport or PR readiness; the upstream ledger and final independent
 review are still incomplete.
+
+## Cache snapshot dependency validation
+
+The coordinated AdvancedCore snapshot backport preserves queued/claimed visible
+values, rejects stale refresh publication after writes/replacement/eviction,
+retains dynamic stored columns, and uses coherent owned integer/string lookups.
+Existing mutable cache API and numeric-string parsing remain compatible.
+Java8 producer `clean install`:101 unit+8 artifact tests, zero failures/errors/
+skips. Exact consumer `clean verify`:14 unit+1 artifact test, all passing. Both
+artifacts remain base class major<=52. Actual Spigot1.8.8/Java8 SQLite acceptance
+against the exact consumer hash passes vote/reward, SetPoints/AddPoints to10,
+total1, stop and restart persistence (`CacheSnapshot` runtime evidence).
+
+Checked read error propagation, registry generations, direct setter admission,
+shutdown drain and the full upstream ledger remain incomplete. This consumer
+validation does not imply whole-backport readiness or approval to open a PR.
