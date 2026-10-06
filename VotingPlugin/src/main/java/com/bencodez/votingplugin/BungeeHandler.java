@@ -164,13 +164,27 @@ public class BungeeHandler implements Listener {
 		return Boolean.valueOf(data.getString());
 	}
 
-	public void close() {
+	/** Stop ingress and global-data producers without closing their database underneath accepted work. */
+	public void stopAcceptingMessages() {
 		if (socketHandler != null) {
 			socketHandler.closeConnection();
 		}
 		if (clientHandler != null) {
 			clientHandler.stopConnection();
 		}
+		if (timer != null) {
+			timer.shutdown();
+			try {
+				if (!timer.awaitTermination(5, TimeUnit.SECONDS)) throw new IllegalStateException("Global-data work has not settled; provider remains open");
+			} catch (InterruptedException interrupted) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Global-data shutdown interrupted; provider remains open", interrupted);
+			}
+		}
+	}
+
+	public void close() {
+		stopAcceptingMessages();
 		plugin.getServerData().setBungeeVotePartyCurrent(bungeeVotePartyCurrent);
 		plugin.getServerData().setBungeeVotePartyRequired(bungeeVotePartyRequired);
 		if (globalDataHandler != null) {

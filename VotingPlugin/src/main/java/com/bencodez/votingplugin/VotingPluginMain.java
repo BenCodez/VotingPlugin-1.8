@@ -1444,22 +1444,30 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 	 *
 	 * @see org.bukkit.plugin.java.JavaPlugin#onDisable()
 	 */
+	private boolean shutdownIngressStopped;
+
 	@Override
-	public void onUnLoad() {
-		if (bungeeSettings.isUseBungeecoord()) {
+	public void onPreUnLoad() {
+		if (!shutdownIngressStopped) {
+			if (bungeeSettings != null && bungeeSettings.isUseBungeecoord() && getBungeeHandler() != null) getBungeeHandler().stopAcceptingMessages();
+			shutdownIngressStopped = true;
+		}
+		if (timeQueueHandler != null) timeQueueHandler.stopScheduledChecks();
+		if (voteTimer != null) {
+			voteTimer.shutdown();
 			try {
-				getBungeeHandler().close();
-			} catch (Exception e) {
-				debug(e);
+				if (!voteTimer.awaitTermination(1, TimeUnit.SECONDS)) throw new IllegalStateException("Accepted vote work has not settled; storage provider remains open");
+			} catch (InterruptedException interrupted) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Vote shutdown interrupted; storage provider remains open", interrupted);
 			}
 		}
-		voteTimer.shutdown();
-		try {
-			voteTimer.awaitTermination(1, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		voteTimer.shutdownNow();
+	}
+
+	@Override
+	public void onUnLoad() {
+		onPreUnLoad();
+		if (bungeeSettings != null && bungeeSettings.isUseBungeecoord() && getBungeeHandler() != null) getBungeeHandler().close();
 		if (timeQueueHandler != null) {
 			timeQueueHandler.save();
 		}
