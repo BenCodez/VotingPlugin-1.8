@@ -387,3 +387,15 @@ and restart persistence. No checkedwrite/event/linkage errors observed.
 Fixture-only plugin removed, no escape probe created, owned server stopped.
 Evidence reward-names-build-results.json and RewardNamesSQL runtime JSON/logs.
 Live MySQL/proxy/quarantine/shutdown-failure acceptance remains unverified.
+
+## Exact asynchronous injection API dependency validation
+
+AdvancedCore's additive Java8 CompletionStage injection hooks preserve legacy
+synchronous defaults and callbacks. VotingPlugin source and queue formats are
+unchanged. Exact installed producer a16ec6e8e41f53637a134ef935afd419e58a5ebd886c896998dfdffc27713eee
+builds143unit+12artifact; consumer39cc5ed87a281bf0b800ab3440ce15b33501600ba9e4cb51d9f933dfa799dbd9
+builds19unit+1artifact, all zero failures/errors/skips, base major<=52.
+This validates dependency/API packaging, not asynchronous reward dispatch or
+durable queued replay; those integration phases and final acceptance remain
+due. Generated snapshot quarantine remains disabled until replay completion
+and persisted provenance can be preserved safely.
