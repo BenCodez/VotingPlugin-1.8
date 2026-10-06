@@ -3631,3 +3631,23 @@ such names needs a separate reproduction and fix. The full801fb0a/5ef372/5198b96
 headless/borrowed/retained migration patches remain partial or pending. Existing APIs,
 configuration/data/wire/release contracts and original/reference checkouts are preserved.
 No whole-main parity, final independent review, push or PR readiness is claimed.
+
+## Retained SQL identity consumer validation
+
+Validated against isolated AdvancedCore commit
+`fa36277` (canonical retained SQL names), without changing VotingPlugin configuration,
+user data formats, proxy payloads, release metadata or dependencies. The exact locally
+installed producer SHA256 is
+`71994ccb9e754203107428a2db23daf5a083a769aa38c417da0e8b877f28df34`.
+ActualJava8 clean verify passes45 unit +1 artifact =46 tests, zero failures/errors/skips.
+Consumer SHA256 `1b54f644851d4460bb73e39f0ed4e5f322695f9b024cbd2201c6c70e73e56518`;
+all2451 base classes have major<=52.
+
+Nine actualJava8/Spigot1.8.8 checks pass on that exact consumer, including a stored
+lowercase SQL alias containing17 surviving canonical user-cache refresh rather than
+being hidden by the registered default0. Existing detached schema/default registration,
+preserved legacy user, physical SQLite integrity and clean shutdown/linkage checks pass.
+Producer MariaDB acceptance also preserves17 through strict/legacy single and complete
+reads and UserData conversion. This is focused compatibility evidence; full retained
+schema/type migration, the remaining upstream ledger and final independent review are
+still unfinished. No push or PR has occurred.
