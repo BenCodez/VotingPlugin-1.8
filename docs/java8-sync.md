@@ -3707,3 +3707,27 @@ Nine exact-consumer Java8/Spigot1.8.8 SQLite/schema/cache/startup/shutdown accep
 pass. MySQL user-cache runtime, every driver/pool combination, full vote/proxy acceptance,
 remaining upstream ledger work and final independent review are not proven by these checks.
 No push, PR or whole-backport readiness is claimed.
+
+
+## Explicit SQL type dependency checkpoint
+
+Exact isolated AdvancedCore source: `f3e83946d96565a900e168da38f4426e1f8bebd1`.
+The native alterColumnType API remains asynchronous and checks presence without first
+converting the retained column to its registered definition. Its existing executor runs
+checked SQL; pending explicit ownership suppresses a competing automatic conversion,
+settlement requires successful cleanup, rejection restores prior ownership, and older
+failures cannot cancel newer requests. This changes no consumer configuration, serialized
+formats or proxy payloads. External-addon cross-restart override and shutdown/cancellation
+expectations remain part of the unfinished compatibility audit.
+
+ActualJava8 workspace-local producer clean install:630 unit +72 artifact =702 PASS;
+exact installed producer consumer clean verify:45 unit +1 artifact =46 PASS, zero failures/
+errors/skips. Same explicit Maven repository/resolver/tmp flags and commands as recorded in
+the previous checkpoint. Producer SHA256
+`2a9c7ecc90b0981b5b1a284c69c8a8781f1ee1c8a467e4c439dc557d115fbbbc`;
+consumer SHA256 `08c4ebaa0d9052886fdb1792d64b3f4be20c916adb50a944fad117bce3be8284`.
+All1842/2459 respective base classes have major<=52. Real native packaged API/executor/
+MariaDB proves INT before worker admission, requested VARCHAR(30) after worker execution,
+later-check stability and retained17. Nine exact-consumer Java8/Spigot1.8.8 SQLite/schema/
+cache/startup/shutdown checks pass. Broader ledger/runtime and final independent review
+remain incomplete; no whole-backport readiness, push or PR is claimed.
