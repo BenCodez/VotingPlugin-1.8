@@ -376,6 +376,16 @@ public class VotingPluginBungee extends Plugin implements Listener {
 
 	}
 
+	/** Retain the connected player's canonical spelling for offline UUIDs. */
+	String getOfflineUUID(String playerName) {
+		ProxiedPlayer player = getProxy().getPlayer(playerName);
+		if (player != null && player.isConnected()) {
+			playerName = player.getName();
+		}
+		return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8))
+				.toString();
+	}
+
 	@Override
 	public void onDisable() {
 		if (getVotingPluginProxy() == null) {
@@ -480,8 +490,7 @@ public class VotingPluginBungee extends Plugin implements Listener {
 			public String getUUID(String playerName) {
 
 				if (!config.getOnlineMode()) {
-					return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8))
-							.toString();
+					return getOfflineUUID(playerName);
 				}
 				ProxiedPlayer p = getProxy().getPlayer(playerName);
 				if (p != null && p.isConnected()) {

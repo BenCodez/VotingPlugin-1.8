@@ -167,3 +167,18 @@ and two packaged read regressions cover apostrophes, SQL-looking names, boolean
 format and empty updates. The read regressions execute JDBC queries through the
 actual shaded Java8 dependency layout, with SQLite used for SELECT-compatible
 fixtures; that is not a claim of exercising MySQL-specific write SQL on SQLite.
+
+## Continued portable proxy backport
+
+Upstream `e5668c862a1e4c73f1db3ec24382c70ff976791b` corrects name casing
+before generating offline UUIDs. The retained Bungee implementation now uses a
+connected player's canonical name; absent or disconnected players keep the
+existing UTF-8 `OfflinePlayer:` algorithm. Online-mode UUID lookup and legacy
+proxy payloads are unchanged. Its Velocity portion remains excluded with the
+Java 8 artifact's unsupported Velocity runtime.
+
+Three focused regressions cover connected casing, disconnected players, and the
+absent-player UTF-8 fallback. The connected-casing assertion fails with the
+unchanged legacy algorithm. The coordinated Java 8 `clean verify` then passes
+14 unit tests and one packaged-artifact test, with no failures, errors, or skips
+(`vp-offline-uuid-clean-verify.log` in the isolated workspace evidence).
