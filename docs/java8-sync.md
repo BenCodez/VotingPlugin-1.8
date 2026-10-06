@@ -361,3 +361,29 @@ in the detailed workspace ledger. Velocity remains outside the Java8 runtime:
 compiler and shade exclusions apply, its descriptor is absent, and the current
 compatible-runtime contract does not advertise it. No shared proxy, Bukkit or
 Bungee changes are included in those host-only omission classifications.
+
+## Reward lookup compatibility integration
+
+The paired AdvancedCore keeps its legacy RewardHandler/ArrayList APIs while
+porting pinned reward alias normalization and final filename validation from
+2599db95...,5d4d5bee... and1da8dd94.... Configured direct/sub rewards resolve
+case, spaces, dots and underscores consistently; normalized duplicate handles
+register once. VotingPlugin's existing loadDirectlyDefined clears/rebuilds the
+list, so replacement configuration remains authoritative. Missing file and
+generated-snapshot lookups reject absolute paths, separators and NUL before
+construction; registered handles are resolved first. No schema/config/wire
+change is required. The broader reward loader/quarantine/executor redesign
+and storage/lifecycle ownership audit remain incomplete.
+
+Java8 producer clean install136unit+12artifact and exactconsumer clean verify
+19unit+1artifact all pass with zero failures/errors/skips. Both base bytecode
+remain major<=52. Controlled Spigot1.8.8 fixture-only plugin verifies packaged
+lowercase VoteSites reward aliases and rejects unsafe ordinary/generated file
+lookups; production plugins do not depend on that acceptance plugin.
+
+Exact consumerb795fac2... passes actual Java8/Spigot1.8.8SQLite RewardNamesSQL
+vote/reward, packaged alias/file-guard checks,points10,total1,graceful stop
+and restart persistence. No checkedwrite/event/linkage errors observed.
+Fixture-only plugin removed, no escape probe created, owned server stopped.
+Evidence reward-names-build-results.json and RewardNamesSQL runtime JSON/logs.
+Live MySQL/proxy/quarantine/shutdown-failure acceptance remains unverified.
