@@ -3651,3 +3651,25 @@ Producer MariaDB acceptance also preserves17 through strict/legacy single and co
 reads and UserData conversion. This is focused compatibility evidence; full retained
 schema/type migration, the remaining upstream ledger and final independent review are
 still unfinished. No push or PR has occurred.
+
+## Safe retained string-schema producer integration
+
+Exact isolated producer commit `06603e62199061c5cc388a92691229633b65ca8e` adds checked
+retained numeric-to-string reconciliation and guards against permissive SQL truncation.
+Consumer code/configuration, release metadata and wire/data formats are unchanged.
+Exact producer SHA256 `da6deba2a3623ef12de2b4c0ddfa226cbbf7251dc2390f93d011b88d9239f1a7`;
+consumer SHA256 `a16036fa2e1c5c640aeb76888a7445700e717b347b73d6b65c8fbc84c8f16ef7`.
+ActualJava8 producer clean install625 unit +50 artifact =675 PASS; consumer clean
+verify45 unit +1 artifact =46 PASS, no failures/errors/skips. All2455 consumer base
+classes have major<=52. Nine exact-consumer nativeJava8/Spigot1.8.8 registration/cache,
+legacySQLite integrity and clean-shutdown/linkage checks pass.
+
+LiveJava8/MariaDB producer checks prove successfulTEXT conversion preserving17 and
+physical attributes, rejectedVARCHAR(1) truncation preservingINT/17 and restored SQL
+mode, and restoration-failure eviction preserving pool availability and stored data.
+Only the borrowed connection receives temporary strict mode; its original mode is
+restored or that connection is evicted through the installed Hikari public API.
+The wider numeric-declaration, UUID, headless and upstream ledger scope remains
+unfinished. An earlier intermittent inventory-test failure remains recorded with its
+unchanged focused/full reruns; no assertion was weakened. No final independent review,
+push, PR or overall readiness claim has occurred.
