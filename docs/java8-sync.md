@@ -182,3 +182,23 @@ absent-player UTF-8 fallback. The connected-casing assertion fails with the
 unchanged legacy algorithm. The coordinated Java 8 `clean verify` then passes
 14 unit tests and one packaged-artifact test, with no failures, errors, or skips
 (`vp-offline-uuid-clean-verify.log` in the isolated workspace evidence).
+
+The subsequent coordinated rebuild against AdvancedCore's cache scheduler fix
+passes 14 unit tests and one packaged-artifact test; AdvancedCore passes 59 unit
+and three packaged-artifact tests. The unchanged scheduler reproduced three
+failures before its fix. No broad storage-failure durability claim follows from
+that scheduler change.
+
+Live Java8 acceptance on Spigot1.8.8 and archived Bungee1485, with NuVotifier2.7.2
+and the isolated MariaDB fixture, delivered a lower-case `portproxy` vote while
+`PortProxy` was connected. Proxy forwarding used the existing offline UUID. The
+single matching user row remained single, and totals/points increased from4/4
+to5/5; the backend and client observed the reward. Both plugins stopped cleanly,
+and the temporary fixture-only OnlineMode change was restored. No class-version,
+linkage, invalid-material, or SQL exception appeared in these logs. The client
+placeholder query occurred before the vote and returned4/4; that is not evidence
+of post-vote placeholder refresh. Proxy SQL has its own legacy table owner, so
+this vote does not prove execution coverage of every AdvancedCore SQL branch.
+
+The complete upstream ledger remains under review. These additional validated
+fixes stay on the same two branches for one eventual full-scope PR per fork.
