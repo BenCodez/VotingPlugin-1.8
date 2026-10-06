@@ -283,3 +283,16 @@ live MySQL/proxy validation of this new reader and failed-shutdown behavior are
 not claimed. Manager generation fencing, direct setter admission, shutdown drain,
 remaining feature ledger and final independent review remain incomplete. No PR
 has been opened and this is not whole-backport readiness.
+
+## AdvancedCore registry fencing integration
+
+The paired AdvancedCore candidate protects cache registry generations: slow
+population cannot overwrite an active entry, removal detaches the captured
+instance before post-commit callbacks, and bulk clear preserves replacements.
+Existing cache APIs remain; global storage/shutdown admission remains incomplete.
+Java8 clean verify passes14 unit+1 artifact tests with the exact producer build
+(119 unit+12 artifact tests). Both jars retain base bytecode major<=52. Exact
+consumer Spigot1.8.8 SQLite acceptance (CacheRegistry) passes vote/reward,
+point commands to10,total1, graceful stop/restart persistence with no observed
+cache snapshot/write, event or linkage errors. Full ledger, final acceptance
+and independent review remain due; no PR readiness is claimed.
