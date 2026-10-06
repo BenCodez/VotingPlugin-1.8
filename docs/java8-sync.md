@@ -216,3 +216,16 @@ errors or skips (`vp-checked-write-autocommit-verify.log`). The new SQL methods
 have real SQLite and isolated MariaDB acceptance. Legacy UserData/cache callers
 remain under coordinated integration, so this is not a claim of cache write
 failure recovery or changed vote-processing semantics.
+
+## Checked common storage adapter dependency validation
+
+AdvancedCore's additive checked FLAT/MySQL/SQLite batch adapter is now built with
+Java8 and installed only into the isolated workspace Maven repository. This
+consumer's exact-candidate `clean verify` passes14 unit+1 packaged-artifact test,
+zero failures/errors/skips. The producer passes82 unit+8 packaged-artifact tests.
+Both artifacts have maximum base class major52. No configuration keys, schema,
+wire format, release version or production dependency changed in this cohort.
+
+Existing cache callers still use the legacy write path pending coordinated
+failure retention, flush ownership and retirement work. This consumer build is
+not evidence of completed vote/point durability or whole-backport readiness.
