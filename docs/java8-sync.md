@@ -229,3 +229,23 @@ wire format, release version or production dependency changed in this cohort.
 Existing cache callers still use the legacy write path pending coordinated
 failure retention, flush ownership and retirement work. This consumer build is
 not evidence of completed vote/point durability or whole-backport readiness.
+
+## Checked cache batch dependency integration
+
+AdvancedCore now routes queued cache batches through checked FLAT/MySQL/SQLite
+writes, retains failed payloads for ordered retry, serializes claims and
+same-instance retirement, and delivers callbacks outside the storage owner.
+The exact Java8 coordinated builds pass91 unit+8 artifact tests in AdvancedCore
+and14 unit+1 artifact test here, zero failures/errors/skips. The source/consumer
+commands and logs are `ac-checked-cache-owner-final-install.log` and
+`vp-checked-cache-owner-final-verify.log` in isolated evidence. No dependency,
+release version, schema, configuration default or wire format changed.
+
+Controlled Java8/Spigot1.8.8 SQLite fixture acceptance covers online vote/reward,
+cached SetPoints/AddPoints, points10/total1, graceful stop and restart
+persistence. Evidence JSON pins each tested artifact; it does not claim MySQL,
+FLAT, proxy or failed-shutdown acceptance. Manager generation fencing,
+population/snapshot reconciliation, direct non-queued writes and shutdown drain
+remain under coordinated implementation. These builds and runtime samples are
+not whole-backport or PR readiness; the upstream ledger and final independent
+review are still incomplete.
