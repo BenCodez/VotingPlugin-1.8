@@ -265,3 +265,21 @@ total1, stop and restart persistence (`CacheSnapshot` runtime evidence).
 Checked read error propagation, registry generations, direct setter admission,
 shutdown drain and the full upstream ledger remain incomplete. This consumer
 validation does not imply whole-backport readiness or approval to open a PR.
+
+## Checked snapshot read dependency acceptance
+
+AdvancedCore cache population now distinguishes missing users from failed storage
+reads through additive checked SQL/file APIs and one checked snapshot query.
+Legacy APIs, schemas, configuration keys and serialized representations remain
+available. Java8 producer clean install:111 unit+12 artifact tests; exact consumer
+clean verify:14 unit+1 artifact test; zero failures/errors/skips, base major<=52.
+The exact artifact additionally passes Java8 Spigot1.8.8 SQLite and FLAT vote,
+reward, point-command, stop and restart acceptance (points10,total1). FLAT fixture
+configuration is restored byte-for-byte; no read/write, event-dispatch or linkage
+errors observed. Evidence logs/hashes are in the isolated workspace.
+
+The packaged MySQL reader has SQLite-backed JDBC and failure/resource tests;
+live MySQL/proxy validation of this new reader and failed-shutdown behavior are
+not claimed. Manager generation fencing, direct setter admission, shutdown drain,
+remaining feature ledger and final independent review remain incomplete. No PR
+has been opened and this is not whole-backport readiness.
