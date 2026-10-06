@@ -62,6 +62,34 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+            <!-- Velocity 3.1.2 runtime targets Java 11; preserve sources but omit its adapter from this Java 8 artifact. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/bencodez/votingplugin/proxy/velocity/**</exclude>
+                        <exclude>com/bencodez/votingplugin/proxy/multiproxy/MultiProxyServerSocketConfigurationVelocity.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <systemPropertyVariables><votingplugin.jar>${project.build.directory}/VotingPlugin.jar</votingplugin.jar></systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution><goals><goal>integration-test</goal><goal>verify</goal></goals></execution>
+                </executions>
+            </plugin>
 			<plugin>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>
@@ -87,7 +115,8 @@
 				<version>3.6.0</version>
 				<configuration>
 					<shadedArtifactAttached>false</shadedArtifactAttached>
-					<minimizeJar>true</minimizeJar>
+					<!-- Retain reflective schedulers and public APIs from the exact AdvancedCore artifact. -->
+					<minimizeJar>false</minimizeJar>
 					<filters>
 						<filter>
 							<artifact>mysql-connector-java</artifact>
@@ -160,6 +189,11 @@
 						</goals>
 						<configuration>
 							<artifactSet>
+                                <!-- AdvancedCore is already shaded and Java 8 audited. Do not reintroduce
+                                     its unfiltered transitive dependency classes into this artifact. -->
+                                <includes>
+                                    <include>com.bencodez:advancedcore-1.8</include>
+                                </includes>
 								<!-- Lets exclude google code, because the
 								server already has this 
 									code in it (guava, etc) -->
@@ -175,6 +209,11 @@
 										<exclude>META-INF/*.SF</exclude>
 										<exclude>META-INF/*.DSA</exclude>
 										<exclude>META-INF/*.RSA</exclude>
+                                        <exclude>com/bencodez/votingplugin/proxy/velocity/**</exclude>
+                                        <exclude>com/bencodez/votingplugin/proxy/multiproxy/MultiProxyServerSocketConfigurationVelocity.class</exclude>
+                                        <exclude>velocity-plugin.json</exclude>
+                                        <exclude>com/bencodez/simpleapi/file/velocity/**</exclude>
+                                        <exclude>com/bencodez/simpleapi/sql/mysql/config/MysqlConfigVelocity.class</exclude>
 									</excludes>
 								</filter>
 							</filters>
@@ -198,10 +237,6 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
 		<repository>
-			<id>velocity</id>
-			<url>https://nexus.velocitypowered.com/repository/maven-public/</url>
-		</repository>
-		<repository>
 			<id>bencodez repo</id>
 			<url>https://nexus.bencodez.com/repository/maven-public/</url>
 		</repository>
@@ -216,6 +251,12 @@
 		</repository>
 	</repositories>
 	<dependencies>
+        <dependency>
+            <groupId>org.mockito</groupId><artifactId>mockito-inline</artifactId><version>4.11.0</version><scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.10.3</version><scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
@@ -245,18 +286,6 @@
 			<artifactId>mvdwplaceholderapi</artifactId>
 			<version>3.1.1</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.velocitypowered</groupId>
-			<artifactId>velocity-api</artifactId>
-			<version>3.1.2-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.bstats</groupId>
-			<artifactId>bstats-velocity</artifactId>
-			<version>3.1.0</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>me.clip</groupId>
