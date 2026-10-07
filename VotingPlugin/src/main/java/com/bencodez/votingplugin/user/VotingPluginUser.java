@@ -375,7 +375,8 @@ public class VotingPluginUser extends com.bencodez.advancedcore.api.user.Advance
 					return false;
 				}
 
-				LocalDateTime nextvote = lastVote.plusHours((long) votedelay).plusMinutes((long) voteDelayMin);
+				LocalDateTime nextvote = lastVote.plus(Duration.ofMillis(Math.round(votedelay * 3600000D)))
+						.plus(Duration.ofMillis(Math.round(voteDelayMin * 60000D)));
 
 				return now.isAfter(nextvote);
 			}
@@ -2140,8 +2141,8 @@ public class VotingPluginUser extends com.bencodez.advancedcore.api.user.Advance
 			if (votedelay == 0 && voteSite.getVoteDelayMin() == 0) {
 				return 0;
 			}
-			LocalDateTime nextvote = lastVote.plusHours((long) votedelay)
-					.plusMinutes((long) voteSite.getVoteDelayMin());
+			LocalDateTime nextvote = lastVote.plus(Duration.ofMillis(Math.round(votedelay * 3600000D)))
+					.plus(Duration.ofMillis(Math.round(voteSite.getVoteDelayMin() * 60000D)));
 
 			if (time == 0 || now.isAfter(nextvote)) {
 				return 0;

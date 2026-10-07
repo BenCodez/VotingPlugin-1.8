@@ -20,7 +20,9 @@ keys retain precedence. New installations get the aligned bundled templates.
 - Numeric delays keep their historical units; explicit ms/s/m/h/d duration text
   is accepted. Login/skull/click values remain milliseconds, update interval remains
   integer minutes rounded up, VoteDelay remains fractional hours. Invalid, negative
-  or overflowing durations are rejected rather than silently becoming zero.
+  or overflowing durations are rejected rather than silently becoming zero. Backend
+  cooldown eligibility and remaining-time displays retain fractional hours/minutes
+  down to millisecond precision; daily-reset behavior is unchanged.
 - Database replaces MySQL for native MYSQL storage when no legacy MySQL section
   exists. MYSQL and MARIADB are supported; POSTGRESQL is not silently treated as
   MySQL. Credentials/table prefix remain in the selected section.
