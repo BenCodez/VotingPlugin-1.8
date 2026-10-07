@@ -44,7 +44,7 @@ public class AdminVoteVoteShopItemRemove extends GUIHandler {
 
 		for (final String identifier : plugin.getShopFile().getShopIdentifiers()) {
 			inv.addButton(
-					new BInventoryButton(new ItemBuilder(plugin.getShopFile().getShopIdentifierSection(identifier))
+					new BInventoryButton(new ItemBuilder(plugin.getShopFile().getShopDisplayItemSection(identifier))
 							.addLoreLine("&c&lClick to remove")) {
 
 						@Override

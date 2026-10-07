@@ -1,0 +1,1291 @@
+{
+  "Config.yml": {
+    "DataStorage": "SQLITE",
+    "Database": {
+      "Host": "",
+      "Port": 3306,
+      "Database": "",
+      "Username": "",
+      "Password": "",
+      "MaxConnections": 1,
+      "Prefix": "",
+      "DbType": "MYSQL"
+    },
+    "DebugLevel": "NONE",
+    "GiveDefaultPermission": true,
+    "AutoCreateVoteSites": true,
+    "BedrockPlayerPrefix": ".",
+    "OnlineMode": true,
+    "UseVoteGUIMainCommand": false,
+    "CreateBackups": true,
+    "LoadCommandAliases": true,
+    "PointsOnVote": 1,
+    "CaseInsensitiveYMLFiles": true,
+    "VoteReminderOptions": {
+      "Enabled": true,
+      "StopAfterMatch": true,
+      "GlobalCooldown": "10m",
+      "DefaultPriority": 0,
+      "Defaults": {
+        "Cooldown": 0,
+        "Delay": 0,
+        "Conditions": null,
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou can vote! Sites left: %sitesavailable%"
+          }
+        }
+      }
+    },
+    "VoteReminders": {
+      "OnLogin": {
+        "Type": "LOGIN",
+        "Priority": 50,
+        "Delay": "3s",
+        "Cooldown": "3m",
+        "Conditions": {
+          "CanVoteAny": true
+        },
+        "Rewards": {
+          "Messages": {
+            "Player": "&aWelcome back! You can vote now on &e%sitesavailable%&a sites."
+          }
+        }
+      },
+      "FirstJoinWelcome": {
+        "Type": "FIRST_JOIN",
+        "Priority": 60,
+        "Delay": "2s",
+        "Cooldown": 0,
+        "Rewards": {
+          "Messages": {
+            "Player": "&bWelcome! Type &e/vote &bto see vote sites."
+          }
+        }
+      },
+      "IntervalPing": {
+        "Type": "INTERVAL",
+        "Priority": 10,
+        "Interval": "30m",
+        "Cooldown": "2h",
+        "Conditions": {
+          "CanVoteAny": true,
+          "MinOnlineTime": "10m"
+        },
+        "Rewards": {
+          "Messages": {
+            "Player": "&eReminder: you can vote on &6%sitesavailable% &esites."
+          }
+        }
+      },
+      "CooldownAnySite": {
+        "Type": "COOLDOWN_END_ANY_SITE",
+        "Priority": 35,
+        "Cooldown": "1h",
+        "Conditions": {
+          "CanVoteAny": true
+        },
+        "Rewards": {
+          "Messages": {
+            "Player": "&bA vote site is available again!"
+          }
+        }
+      },
+      "CooldownAllSites": {
+        "Type": "COOLDOWN_END_ALL_SITES",
+        "Priority": 45,
+        "Cooldown": "2h",
+        "Conditions": {
+          "CanVoteAll": true
+        },
+        "Rewards": {
+          "Messages": {
+            "Player": "&dAll vote sites are available again!"
+          }
+        }
+      }
+    },
+    "VoteBroadcast": {
+      "Type": "EVERY_VOTE",
+      "Duration": "2m",
+      "MaxSitesListed": 0,
+      "Format": {
+        "BroadcastMsg": "&6[&4Vote&6] &aThanks &e%player% &afor voting on &e%site%&a!",
+        "Header": "&6[&4Vote&6] &a%player% voted on &e%sites_count% &asites:",
+        "ListLine": "&7 - &e%site%"
+      }
+    },
+    "VoteLogging": {
+      "Enabled": false,
+      "PurgeDays": 30,
+      "UseMainMySQL": true
+    },
+    "BlackList": [
+      "Notch"
+    ],
+    "TopVoterIgnorePermission": false,
+    "VoteTopDefault": "Monthly",
+    "TopVoterAwardsTies": true,
+    "LoadTopVoter": {
+      "AllTime": true,
+      "Monthly": true,
+      "Weekly": false,
+      "Daily": false
+    },
+    "MaxiumNumberOfTopVotersToLoad": 1000,
+    "StoreTopVoters": {
+      "Weekly": false,
+      "Daily": false
+    },
+    "LimitMonthlyVotes": false,
+    "TreatVanishAsOffline": false,
+    "DelayLoginEvent": "0s",
+    "WaitUntilLoggedIn": true,
+    "PerSiteCoolDownEvents": false,
+    "QueueVotesDuringTimeChange": false,
+    "AutomaticTimeChanges": {
+      "Day": true,
+      "Week": true,
+      "Month": true
+    },
+    "AdvancedServiceSiteHandling": false,
+    "UseVoteStreaks": true,
+    "UseHighestTotals": true,
+    "JavascriptEngine": {
+      "Enabled": false,
+      "AutoDownload": false,
+      "CommandEnabled": false
+    },
+    "OfflineVotesLimit": {
+      "Enabled": false,
+      "Amount": 5
+    },
+    "LimitVotePoints": -1,
+    "DefaultRewardWorlds": [],
+    "DefaultRewardBlackListedWorlds": [],
+    "StoreMonthTotalsWithDate": false,
+    "UseMonthDateTotalsAsPrimaryTotal": false,
+    "PreloadSkulls": true,
+    "SkullLoadDelay": "4s",
+    "SkullProfileAPIURL": "",
+    "ExtraAllSitesCheck": false,
+    "PreventRepeatMilestones": false,
+    "AllowUnjoined": false,
+    "AllowUnJoinedCheckServer": true,
+    "ExtraVoteShopCheck": true,
+    "PurgeOldData": false,
+    "PurgeDataOnStartup": false,
+    "PurgeNoDataOnStartup": false,
+    "PurgeMin": 90,
+    "DiscordSRV": {
+      "Enabled": false,
+      "TopVoter": {
+        "AutoRecoverMessageOnFailure": true,
+        "AllTime": {
+          "Enabled": false,
+          "NewMessageOnUpdate": false,
+          "Channel": 1234565,
+          "Title": "All Time Top Voters",
+          "RankDisplay": "%rank%: %player% - %votes% Votes"
+        },
+        "Monthly": {
+          "Enabled": false,
+          "NewMessageOnUpdate": false,
+          "Channel": 1234565,
+          "Title": "Top Voters of the Month",
+          "RankDisplay": "%rank%: %player% - %votes% Votes"
+        },
+        "Weekly": {
+          "Enabled": false,
+          "NewMessageOnUpdate": false,
+          "Channel": 1234565,
+          "Title": "Top Voters of the Week",
+          "RankDisplay": "%rank%: %player% - %votes% Votes"
+        },
+        "Daily": {
+          "Enabled": false,
+          "NewMessageOnUpdate": false,
+          "Channel": 1234565,
+          "Title": "Top Voters of the Day",
+          "RankDisplay": "%rank%: %player% - %votes% Votes"
+        }
+      }
+    },
+    "Format": {
+      "HelpLine": "&6%Command% - &6%HelpMessage%",
+      "Commands": {
+        "Vote": {
+          "Text": [
+            "&3&lVote for our server!"
+          ],
+          "AutoInputSites": true,
+          "OnlyShowSitesToVote": false,
+          "Sites": "&3%num%: &6&l%SiteName% &6- %url%",
+          "ForceLinks": true,
+          "Next": {
+            "Title": "&3&l%player% Next Votes:",
+            "Layout": "&3%SiteName%: &6%info%",
+            "Info": {
+              "CanVote": "Go Vote!",
+              "TimeUntilVote": "%hours% Hours and %minutes% Minutes",
+              "Error": "&cCould not calculate time until next vote!",
+              "VoteDelayDaily": "%hours% Hours and %minutes% Minutes"
+            }
+          },
+          "Last": {
+            "Title": "&3&l%player% Last Vote Times:",
+            "Line": "&3%SiteName%: &6%timeSince%",
+            "TimeFormat": "%amount% %TimeType%",
+            "LastVoted": "%times% ago",
+            "NeverVoted": "Never voted",
+            "IncludeSeconds": true
+          },
+          "Total": [
+            "&3&l%player% Total Votes:",
+            "&3&lDaily Total: &6&l%DailyTotal%",
+            "&3&lWeekly Total: &6&l%WeeklyTotal%",
+            "&3&lMonthly Total: &6&l%MonthlyTotal%",
+            "&3&lAllTime Total: &6&l%AllTimeTotal%"
+          ],
+          "TotalAll": [
+            "&3&lServer Total Votes:",
+            "&3&lDaily Total: &6&l%DailyTotal%",
+            "&3&lWeekly Total: &6&l%WeeklyTotal%",
+            "&3&lMonthly Total: &6&l%MonthlyTotal%",
+            "&3&lAllTime Total: &6&l%AllTimeTotal%"
+          ],
+          "Top": {
+            "Title": "&3Top %Top% Voters %page%/%maxpages%",
+            "Line": "&c%num%: &6%player%, %votes%"
+          },
+          "Help": {
+            "Title": "&6&lVoting Player Help",
+            "Line": "&6%Command% - &6%HelpMessage%",
+            "HoverColor": "AQUA",
+            "RequirePermission": true
+          },
+          "Best": {
+            "Title": "&3&l%player% Best Votes",
+            "Lines": [
+              "&3Highest Daily Total: &3&l%HighestDailyTotal%",
+              "&3Highest Week Total: &3&l%HighestWeeklyTotal%",
+              "&3Highest Month Total: &3&l%HighestMonthlyTotal%"
+            ]
+          },
+          "Streak": {
+            "Title": "&3&l%player% Vote Streak",
+            "Lines": [
+              "&3Current Daily Streak: &3&l%DailyStreak%",
+              "&3Current Week Streak: &3&l%WeeklyStreak%",
+              "&3Current Month Streak: &3&l%MonthlyStreak%",
+              "&3&lHighest Streaks:",
+              "&3Highest Daily Streak: &3&l%BestDailyStreak%",
+              "&3Highest Week Streak: &3&l%BestWeeklyStreak%",
+              "&3Highest Month Streak: &3&l%BestMonthlyStreak%"
+            ]
+          },
+          "Today": {
+            "Title": [
+              "&cToday's Votes %page%/%maxpage%",
+              "&cPlayerName : VoteSite : Time"
+            ],
+            "Line": "&6%player% : %VoteSite% : %Time%"
+          },
+          "Party": [
+            "&cCurrently at &6%Votes%&c, &6%NeededVotes% &cmore votes to go to reach &6%VotesRequired%"
+          ],
+          "Points": "&a%Player% currently has &a&l%Points%&a Points!",
+          "GivePoints": {
+            "NotEnoughPoints": "&cNot enough points",
+            "NotJoinedServer": "&c%player% has not joined the server",
+            "NumberLowerThanZero": "&cNumber of points needs to be greater than 0",
+            "TransferFrom": "&c%transfer% points given to %touser%",
+            "TransferTo": "&cYou received %transfer% points from %fromuser%"
+          },
+          "ToggleBroadcasts": {
+            "Enabled": "&cYou will now see vote broadcasts",
+            "Disabled": "&cYou will no longer see vote broadcasts"
+          },
+          "ToggleReminders": {
+            "Enabled": "&cVote reminders enabled",
+            "Disabled": "&cVote reminders disabled"
+          }
+        },
+        "AdminVote": {
+          "Points": {
+            "PlayerGiven": "&cYou have been given %amount% voting points",
+            "PlayerRemoved": "&cYou have been removed %amount% voting points"
+          }
+        }
+      },
+      "TopVoterAwardMsg": "&aYou came in %place% in top voters of the month! Here is an award!",
+      "TimeFormat": "EEE, d MMM yyyy HH:mm",
+      "RewardTimeFormat": "EEE, d MMM yyyy HH:mm",
+      "TimeFormats": {
+        "Day": "Day",
+        "Days": "Days",
+        "Hour": "Hour",
+        "Hours": "Hours",
+        "Minute": "Minute",
+        "Minutes": "Minutes",
+        "Second": "Second",
+        "Seconds": "Seconds"
+      },
+      "Signs": {
+        "TopVoterSign": {
+          "Line1": "TopVoter: %SiteName%",
+          "Line2": "#%position%",
+          "Line3": "%player%",
+          "Line4": "%votes% Votes"
+        },
+        "RightClickMessage": "&c&l%player% &cis &c&l%position% &cwith &c&l%votes% &cvotes in &c&l%SiteName%"
+      },
+      "NoPerms": "&cYou do not have enough permission!",
+      "NotNumber": "&cError on &6%arg%&c, number expected!",
+      "ShopPurchase": "&aYou bought the %Identifier% for %Points% Points!",
+      "ShopFailed": "&cYou do not have %Points% points to purchase this!",
+      "ShopNotPurchasable": "&cThis item is not buyable!",
+      "UserNotExist": "&cUser does not exist: %player%",
+      "PrevItem": {
+        "Material": "BLACK_STAINED_GLASS_PANE",
+        "Amount": 1,
+        "Name": "&aPrevious Page"
+      },
+      "NextItem": {
+        "Material": "BLACK_STAINED_GLASS_PANE",
+        "Amount": 1,
+        "Name": "&aNext Page"
+      },
+      "InvFull": "&cInventory full",
+      "TopVoter": {
+        "Daily": "Daily",
+        "Weekly": "Weekly",
+        "Monthly": "Monthly",
+        "AllTime": "AllTime"
+      },
+      "InvalidCommand": {
+        "Vote": "&4No valid arguments, see /vote help!",
+        "AdminVote": "&4No valid arguments, see /adminvote help!"
+      }
+    },
+    "VotingBroadcastBlacklist": [],
+    "BroadcastBlacklist": [],
+    "AlwaysUpdate": false,
+    "UpdateWithPlayersOnlineOnly": false,
+    "DelayBetweenUpdates": "3m",
+    "ExtraBackgroundUpdate": false,
+    "DisabledDefaultPermissions": [],
+    "UseVaultPermissions": false,
+    "DisabledCommands": [],
+    "MultiplePermissionsCheck": false,
+    "AllowVotePointTransfers": false,
+    "AddCustomCommands": false,
+    "CustomCommands": {
+      "command1": {
+        "Args": [
+          "token"
+        ],
+        "Message": "token message",
+        "Permission": "votingplugin.commands.vote.token",
+        "HelpMessage": "See tokens",
+        "Commands": [
+          "tokencommand"
+        ]
+      }
+    },
+    "ClickSound": {
+      "Sound": "ui.button.click",
+      "Volume": 1.0,
+      "Pitch": 1.0
+    },
+    "DropOnFullInv": true,
+    "SpamClickTime": "100ms",
+    "AlwaysCloseInventory": false,
+    "CloseInventoryOnVote": true,
+    "CloseGUIOnShiftClick": false,
+    "PlaceholderCacheLevel": "AUTO",
+    "AlwaysProcessAsyncPlaceholders": false,
+    "CachedPlaceholders": [],
+    "UseJavascriptPlaceholders": false,
+    "CustomPlaceholderReturns": {},
+    "LoadInteralExpansion": true,
+    "Webhooks": {
+      "Enabled": false,
+      "Definitions": {
+        "discord-staff": {
+          "Enabled": false,
+          "Url": "https://discord.com/api/webhooks/XXXX/XXXX",
+          "Method": "POST",
+          "ContentType": "application/json",
+          "TimeoutMs": 8000,
+          "Headers": {
+            "X-Server": "{SERVER}"
+          },
+          "HandleDiscordRateLimits": true,
+          "Retry": {
+            "Enabled": true,
+            "MaxAttempts": 5,
+            "BackoffMs": 1500,
+            "MaxBackoffMs": 15000
+          },
+          "Signature": {
+            "Enabled": false,
+            "Algo": "HMAC_SHA256",
+            "Header": "X-Signature",
+            "Secret": "change-me"
+          }
+        }
+      }
+    },
+    "Control": {
+      "AllowInsecureHttpPluginDeployment": false,
+      "Hosted": {
+        "Enabled": false,
+        "AutoDownload": true,
+        "AutoUpdate": true,
+        "DownloadUrl": "",
+        "Sha256": "",
+        "JarFile": "control/votingplugin-control.jar",
+        "DataDirectory": "control/data",
+        "Host": "127.0.0.1",
+        "Port": 8080,
+        "StartupTimeoutSeconds": 30,
+        "DownloadTimeoutSeconds": 60
+      },
+      "Backend": {
+        "Enabled": false,
+        "NodeId": "",
+        "Endpoint": "http://127.0.0.1:8080",
+        "CredentialFile": "control/control-credential.txt",
+        "HeartbeatSeconds": 30,
+        "ConnectTimeoutMillis": 3000,
+        "RequestTimeoutMillis": 10000
+      }
+    },
+    "DisableCoolDownCheck": false,
+    "DisableInteractEvent": false,
+    "ProcessRewards": true,
+    "DisableNoServiceSiteMessage": false,
+    "AddTotals": true,
+    "AddTotalsOffline": true,
+    "CountFakeVotes": true,
+    "DisableUpdateChecking": false,
+    "DisableAdvancedTab": false
+  },
+  "GUI.yml": {
+    "GUIMethod": {
+      "Today": "CHEST",
+      "TopVoter": "CHEST",
+      "Last": "CHEST",
+      "Next": "CHEST",
+      "Total": "CHEST",
+      "URL": "CHEST",
+      "Best": "CHEST",
+      "Streak": "CHEST",
+      "GUI": "CHEST"
+    },
+    "LastMonthGUI": false,
+    "CHEST": {
+      "VoteGUI": {
+        "URL": {
+          "Item": {
+            "Material": "BOW",
+            "Amount": 1,
+            "Name": "&4URL",
+            "Lore": [
+              "&aClick me for links"
+            ]
+          }
+        },
+        "Next": {
+          "Item": {
+            "Material": "COMPASS",
+            "Amount": 1,
+            "Name": "&4Next"
+          }
+        },
+        "Last": {
+          "Item": {
+            "Material": "CLOCK",
+            "Amount": 1,
+            "Name": "&4Last"
+          }
+        },
+        "Total": {
+          "Item": {
+            "Material": "CHEST",
+            "Amount": 1,
+            "Name": "&4Total"
+          }
+        },
+        "Top": {
+          "Item": {
+            "Material": "OAK_SIGN",
+            "Amount": 1,
+            "Name": "&4Top"
+          }
+        },
+        "Today": {
+          "Item": {
+            "Material": "BOOK",
+            "Amount": 1,
+            "Name": "&4Today"
+          }
+        },
+        "Shop": {
+          "Item": {
+            "Material": "DIAMOND",
+            "Amount": 1,
+            "Name": "&4Vote Shop",
+            "Lore": [
+              "&aYou currently have %points% points"
+            ]
+          }
+        }
+      },
+      "VoteURL": {
+        "Name": "&cVoteURL",
+        "BackButton": true,
+        "SiteName": "&c%Name%",
+        "SiteNameCanVote": "&a%Name%",
+        "SeeURL": "&cClick to see URL",
+        "NextVote": "&cCan Vote In: %Info%",
+        "ViewAllUrlsButtonEnabled": true,
+        "AllUrlsButton": {
+          "RequireAllSitesVoted": true,
+          "AlreadyVotedItem": {
+            "Material": "REDSTONE_BLOCK",
+            "Data": 0,
+            "Amount": 1,
+            "Name": "&4All Voting Sites",
+            "Lore": [
+              "&cClick Me"
+            ]
+          },
+          "CanVoteItem": {
+            "Material": "EMERALD_BLOCK",
+            "Data": 0,
+            "Amount": 1,
+            "Name": "&4All Voting Sites",
+            "Lore": [
+              "&cClick Me"
+            ]
+          }
+        },
+        "AlreadyVotedItem": {
+          "Material": "REDSTONE_BLOCK",
+          "Data": 0,
+          "Amount": 1
+        },
+        "CanVoteItem": {
+          "Material": "EMERALD_BLOCK",
+          "Data": 0,
+          "Amount": 1
+        },
+        "URLText": "%VoteUrl%"
+      },
+      "VoteLast": {
+        "Name": "VoteLast: %player%",
+        "BackButton": true,
+        "Line": "&6%timeSince%",
+        "ClickableLinks": true
+      },
+      "VoteNext": {
+        "Name": "VoteNext: %player%",
+        "BackButton": true,
+        "LoreLine": "%time%"
+      },
+      "VoteToday": {
+        "Name": "VoteToday",
+        "Line": "&6%VoteSite% : %Time%",
+        "IconTitle": "%player%",
+        "BackButton": true,
+        "UseSkull": true,
+        "PlayerItem": {
+          "Material": "PAPER",
+          "Amount": 1
+        }
+      },
+      "VoteTop": {
+        "Name": "VoteTop %topvoter%",
+        "BackButton": true,
+        "Item": {
+          "Name": "&3&l%position%: &3%player%",
+          "Lore": "&3&lVotes: &3%votes%"
+        },
+        "OpenMainGUIOnClick": true,
+        "CloseGUIOnClick": true,
+        "SwitchItem": {
+          "Name": "&3Switch TopVoter",
+          "Lore": "&bCurrently: %Top%",
+          "Material": "OAK_SIGN",
+          "Amount": 1,
+          "Slot": 7
+        },
+        "Size": 27,
+        "UseSkull": true,
+        "PlayerItem": {
+          "Material": "PAPER"
+        },
+        "Customization": {
+          "Enabled": false,
+          "PlayerSlots": [],
+          "ExtraItems": {},
+          "RemoveBottomBar": false,
+          "BackButtonSlot": 0
+        }
+      },
+      "VoteTotal": {
+        "Name": "VoteTotal: %player%",
+        "BackButton": true,
+        "DayTotal": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cDaily Total",
+            "Lore": "&c&lTotal: &c%Total%",
+            "Amount": 1
+          }
+        },
+        "WeekTotal": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cWeekly Total",
+            "Lore": "&c&lTotal: &c%Total%",
+            "Amount": 1
+          }
+        },
+        "MonthTotal": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cMonthly Total",
+            "Lore": "&c&lTotal: &c%Total%",
+            "Amount": 1
+          }
+        },
+        "AllTimeTotal": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cAllTime Total",
+            "Lore": "&c&lTotal: &c%Total%",
+            "Amount": 1
+          }
+        }
+      },
+      "VoteBest": {
+        "Name": "VoteBest: %player%",
+        "BackButton": true,
+        "DayBest": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cDaily Best",
+            "Lore": "&c&lBest: &c%Best%",
+            "Amount": 1
+          }
+        },
+        "WeekBest": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cWeekly Best",
+            "Lore": "&c&lBest: &c%Best%",
+            "Amount": 1
+          }
+        },
+        "MonthBest": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cMonthly Best",
+            "Lore": "&c&lBest: &c%Best%",
+            "Amount": 1
+          }
+        }
+      },
+      "VoteStreak": {
+        "Name": "VoteStreak: %player%",
+        "BackButton": false,
+        "CurrentDayStreak": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cCurrent Daily Streak",
+            "Lore": "&c&lStreak: &c%Streak%",
+            "Amount": 1
+          }
+        },
+        "CurrentWeekStreak": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cCurrent Weekly Streak",
+            "Lore": "&c&lStreak: &c%Streak%",
+            "Amount": 1
+          }
+        },
+        "CurrentMonthStreak": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cCurrent Monthly Streak",
+            "Lore": "&c&lStreak: &c%Streak%",
+            "Amount": 1
+          }
+        },
+        "HighestDayStreak": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cHighest Daily Streak",
+            "Lore": "&c&lStreak: &c%Streak%",
+            "Amount": 1
+          }
+        },
+        "HighestWeekStreak": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cHighest Weekly Streak",
+            "Lore": "&c&lStreak: &c%Streak%",
+            "Amount": 1
+          }
+        },
+        "HighestMonthStreak": {
+          "Item": {
+            "Material": "CLOCK",
+            "Name": "&cHighest Monthly Streak",
+            "Lore": "&c&lStreak: &c%Streak%",
+            "Amount": 1
+          }
+        }
+      },
+      "VoteURLSite": {
+        "Name": "VoteSite: %site%"
+      },
+      "VoteGUIName": "&cVoteGUI: &c&l%player%",
+      "VoteRewardName": "VoteReward",
+      "BackButton": {
+        "Material": "BARRIER",
+        "Data": 0,
+        "Amount": 1,
+        "Name": "&8Back to VoteGUI",
+        "OpenVoteURL": false,
+        "EndOfGUI": false,
+        "Exit": false
+      }
+    },
+    "BOOK": {
+      "VoteURLBookGUI": {
+        "Title": "&cVoteURL",
+        "CanVoteText": "Click me",
+        "CanVoteColor": "GREEN",
+        "AlreadyVotedText": "Click me",
+        "AlreadyVotedColor": "RED",
+        "Manual": false,
+        "TopLayout": [],
+        "Layout": [
+          "&3&l%Sitename%",
+          "[UrlText]"
+        ]
+      }
+    }
+  },
+  "VoteSites.yml": {
+    "VoteSites": {
+      "ExampleVoteSite": {
+        "Enabled": false,
+        "Name": "ExampleVoteSite",
+        "Priority": 5,
+        "Hidden": false,
+        "ServiceSite": "PlanetMinecraft.com",
+        "VoteURL": "link to vote URL here, used in /vote",
+        "VoteDelay": "24h",
+        "WaitUntilVoteDelay": false,
+        "VoteDelayDaily": false,
+        "ForceOffline": false,
+        "DisplayItem": {
+          "Material": "DIAMOND",
+          "Amount": 1
+        },
+        "Rewards": {
+          "Commands": [
+            "say hello"
+          ],
+          "Messages": {
+            "Player": "You voted"
+          }
+        }
+      },
+      "Site2": {
+        "Enabled": false,
+        "Name": "Site2",
+        "ServiceSite": "Crafty.gg",
+        "VoteURL": "link to vote URL here, used in /vote",
+        "VoteDelay": "24h",
+        "DisplayItem": {
+          "Material": "DIAMOND",
+          "Amount": 1
+        },
+        "Rewards": {
+          "Commands": [
+            "say hello"
+          ],
+          "AdvancedPriority": {
+            "Reward1": {
+              "Chance": 50,
+              "Messages": {
+                "Player": "You got first reward"
+              }
+            },
+            "Reward2": {
+              "Chance": 20,
+              "Messages": {
+                "Player": "You got second reward"
+              }
+            },
+            "Fallback": {
+              "Messages": {
+                "Player": "You got unlucky"
+              }
+            }
+          },
+          "Items": {
+            "item1": {
+              "Material": "DIAMOND",
+              "Amount": 1
+            }
+          },
+          "Messages": {
+            "Player": "You voted"
+          }
+        }
+      }
+    },
+    "EverySiteReward": {}
+  },
+  "SpecialRewards.yml": {
+    "VoteMilestonesOptions": {
+      "Groups": {
+        "Default": "ALL",
+        "ExampleId": "FIRST"
+      }
+    },
+    "VoteMilestones": {
+      "FirstVoteAllTime": {
+        "Enabled": true,
+        "Total": "AllTime",
+        "At": 1,
+        "Group": "first",
+        "Rewards": {
+          "Messages": {
+            "Player": "&aThanks for your first vote ever!"
+          }
+        }
+      },
+      "Every25Votes": {
+        "Enabled": false,
+        "Total": "ALLTIME_VOTES",
+        "Every": 25,
+        "Rewards": {
+          "Commands": [
+            "say %player% hit %amount% votes!"
+          ]
+        }
+      },
+      "MilestoneMix": {
+        "Enabled": true,
+        "Total": "Daily",
+        "At": [
+          5,
+          "10..50 step 10",
+          100
+        ],
+        "Rewards": {
+          "Messages": {
+            "Player": "&bDaily milestone reached: %amount%!"
+          }
+        }
+      },
+      "Every10Points": {
+        "Enabled": false,
+        "Total": "POINTS",
+        "Every": 10,
+        "Rewards": {
+          "Commands": [
+            "give %player% diamond 1"
+          ]
+        }
+      },
+      "AllSitesToday_AllDone": {
+        "Enabled": true,
+        "Total": "ALLSITES_TODAY",
+        "At": 5,
+        "Limit": {
+          "Type": "WINDOW_DAY"
+        },
+        "Rewards": {
+          "Messages": {
+            "Player": "&eYou voted on all sites today!"
+          }
+        }
+      },
+      "SomeCooldownExample": {
+        "Enabled": false,
+        "Total": "ALLTIME_VOTES",
+        "Every": 3,
+        "Limit": {
+          "Type": "COOLDOWN",
+          "Duration": "12h"
+        },
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou hit another %amount% votes, but only once every 12 hours!"
+          }
+        }
+      }
+    },
+    "VoteParty": {
+      "Enabled": false,
+      "VotesRequired": 20,
+      "GiveAllPlayers": false,
+      "GiveOnlinePlayersOnly": true,
+      "ResetEachDay": false,
+      "ResetWeekly": false,
+      "ResetMonthly": false,
+      "OnlyOncePerDay": false,
+      "OnlyOncePerWeek": false,
+      "ResetExtraVotesWeekly": false,
+      "ResetExtraVotesMonthly": false,
+      "CountFakeVotes": true,
+      "UserVotesRequired": 0,
+      "CountOfflineVotes": true,
+      "Broadcast": "&cReached the vote party amount!",
+      "VoteReminder": {
+        "AtVotes": [],
+        "Broadcast": "%votesrequired% left to go, go vote!",
+        "Commands": []
+      },
+      "GlobalCommands": [],
+      "GlobalRandomCommand": [],
+      "Rewards": {
+        "Commands": [
+          "say %player%"
+        ],
+        "Items": {
+          "DIAMOND": {
+            "Material": "DIAMOND",
+            "Amount": 1
+          }
+        }
+      }
+    },
+    "VoteStreaks": {
+      "Daily3Votes": {
+        "Type": "DAILY",
+        "Enabled": false,
+        "Requirements": {
+          "Amount": 3,
+          "VotesRequired": 3
+        },
+        "AllowMissedAmount": 1,
+        "AllowMissedPeriod": 7,
+        "Recurring": true,
+        "Rewards": {
+          "Commands": [
+            "say test"
+          ]
+        }
+      },
+      "ProgressGroups": {
+        "MyProgressGroupOne": {
+          "Type": "DAILY",
+          "VotesRequired": 1,
+          "AllowMissedAmount": 1,
+          "AllowMissedPeriod": 7,
+          "RequireMilestoneForLostRewards": true,
+          "LostRewards": {
+            "Messages": {
+              "Player": "&cYou lost your %streak% day voting streak."
+            }
+          },
+          "Milestones": {
+            "DailyStreak3": {
+              "Enabled": false,
+              "Amount": 3,
+              "Recurring": false,
+              "Rewards": {
+                "Messages": {
+                  "Player": "&aYou reached a 3 day streak"
+                }
+              }
+            },
+            "DailyStreak7": {
+              "Enabled": false,
+              "Amount": 7,
+              "Recurring": false,
+              "Rewards": {
+                "Messages": {
+                  "Player": "&aYou reached a 7 day streak"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "NameMCLikeReward": {
+      "Enabled": false,
+      "Url": "play.example.com",
+      "CheckIntervalMinutes": 10,
+      "Rewards": {
+        "Messages": {
+          "Player": "&aThanks for liking the server on NameMC!"
+        },
+        "Commands": [
+          "say %player% liked the server on NameMC!"
+        ]
+      }
+    },
+    "FirstVote": {},
+    "FirstVoteToday": {},
+    "AllSites": {},
+    "OnlyOneCumulative": false,
+    "Cumulative": {
+      "20": {
+        "Enabled": false,
+        "TotalToUse": "AllTime",
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou got %cumulative% cumulative votes!"
+          }
+        }
+      }
+    },
+    "ResetMilestonesMonthly": false,
+    "MileStones": {
+      "20": {
+        "Enabled": false,
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou got %milestone% milestone votes!"
+          }
+        }
+      }
+    },
+    "VoteStreak": {
+      "Day": {
+        "2": {
+          "Enabled": false,
+          "Rewards": {
+            "Messages": {
+              "Player": "&aYou voted for %Streak% %Type%'s in a row!"
+            }
+          }
+        }
+      },
+      "Week": {
+        "2": {
+          "Enabled": false,
+          "Rewards": {
+            "Messages": {
+              "Player": "&aYou voted for %Streak% %Type%'s in a row!"
+            }
+          }
+        }
+      },
+      "Month": {
+        "2": {
+          "Enabled": false,
+          "Rewards": {
+            "Messages": {
+              "Player": "&aYou voted for %Streak% %Type%'s in a row!"
+            }
+          }
+        }
+      },
+      "Requirement": {
+        "UsePercentage": false,
+        "Day": 50,
+        "Week": 50,
+        "Month": 50
+      }
+    },
+    "EnableMonthlyAwards": true,
+    "MonthlyAwards": {
+      "1": {
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou came in first place in %TopVoter%!"
+          }
+        }
+      },
+      "2": {
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou came in second place in %TopVoter%!"
+          }
+        }
+      }
+    },
+    "EnableWeeklyAwards": false,
+    "WeeklyAwards": {
+      "1": {
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou came in first place in %TopVoter%!"
+          }
+        }
+      },
+      "2": {
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou came in second place in %TopVoter%!"
+          }
+        }
+      }
+    },
+    "EnableDailyRewards": false,
+    "DailyAwards": {
+      "1": {
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou came in first place in %TopVoter%!"
+          }
+        }
+      },
+      "2": {
+        "Rewards": {
+          "Messages": {
+            "Player": "&aYou came in second place in %TopVoter%!"
+          }
+        }
+      }
+    }
+  },
+  "Shop.yml": {
+    "VoteShop": {
+      "Enabled": true,
+      "Name": "VoteShop",
+      "BackButton": true,
+      "HideLimitedReached": true,
+      "LimitReached": "&aYou reached your limit",
+      "RequireConfirmation": false,
+      "Disabled": "&cVote shop disabled",
+      "ReopenGUIOnPurchase": false,
+      "BackButtonItem": {
+        "Material": "BARRIER",
+        "Amount": 1,
+        "Name": "&cBack",
+        "Slot": -2
+      }
+    },
+    "Shop": {
+      "Diamond": {
+        "Identifier_Name": "Diamond",
+        "DisplayItem": {
+          "Material": "DIAMOND",
+          "Amount": 1,
+          "Name": "&4Buy A Diamond",
+          "Lore": [
+            "&c&lCost: &c3 Voting Points"
+          ]
+        },
+        "Cost": 3,
+        "Permission": "",
+        "HideOnNoPermission": true,
+        "CloseGUI": true,
+        "RequireConfirmation": false,
+        "Rewards": {
+          "Items": {
+            "Diamond": {
+              "Material": "DIAMOND",
+              "Amount": 1
+            }
+          }
+        }
+      },
+      "Blocks": {
+        "Category": "Blocks",
+        "DisplayItem": {
+          "Material": "CHEST",
+          "Amount": 1,
+          "Name": "&bBlocks",
+          "Lore": [
+            "&7Open block rewards"
+          ]
+        },
+        "Permission": "",
+        "HideOnNoPermission": true
+      }
+    },
+    "Categories": {
+      "Blocks": {
+        "Name": "&bBlocks",
+        "BackButton": true,
+        "BackButtonItem": {
+          "Material": "BARRIER",
+          "Amount": 1,
+          "Slot": -2,
+          "Name": "&cBack",
+          "Lore": [
+            "&7Return to VoteShop"
+          ]
+        },
+        "Shop": {
+          "Emerald": {
+            "Identifier_Name": "Emerald",
+            "DisplayItem": {
+              "Material": "EMERALD",
+              "Amount": 1,
+              "Name": "&aBuy An Emerald",
+              "Lore": [
+                "&c&lCost: &c5 Voting Points"
+              ]
+            },
+            "Cost": 5,
+            "Permission": "",
+            "HideOnNoPermission": true,
+            "CloseGUI": true,
+            "RequireConfirmation": false,
+            "Rewards": {
+              "Items": {
+                "Emerald": {
+                  "Material": "EMERALD",
+                  "Amount": 1
+                }
+              }
+            }
+          },
+          "Stone": {
+            "Identifier_Name": "Stone",
+            "Material": "STONE",
+            "Amount": 16,
+            "Name": "&7Buy Stone",
+            "Lore": [
+              "&c&lCost: &c1 Voting Point"
+            ],
+            "Cost": 1,
+            "Permission": "",
+            "HideOnNoPermission": true,
+            "CloseGUI": true,
+            "RequireConfirmation": false,
+            "Rewards": {
+              "Items": {
+                "Stone": {
+                  "Material": "STONE",
+                  "Amount": 16
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ShopConfirmPurchase": {
+      "UseDialog": false,
+      "Title": "Confirm Purchase?",
+      "YesItem": {
+        "Material": "EMERALD_BLOCK",
+        "Amount": 1,
+        "Name": "&aYes"
+      },
+      "NoItem": {
+        "Material": "BARRIER",
+        "Amount": 1,
+        "Name": "&cNo"
+      }
+    }
+  }
+}

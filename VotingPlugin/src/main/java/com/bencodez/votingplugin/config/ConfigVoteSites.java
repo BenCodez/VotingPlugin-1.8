@@ -179,7 +179,7 @@ public class ConfigVoteSites extends YMLFile {
 	 * @return the vote delay
 	 */
 	public double getVoteDelay(String siteName) {
-		return getData(siteName).getDouble("VoteDelay", 24);
+		return com.bencodez.advancedcore.ConfigDuration.read(getData(siteName).get("VoteDelay"), 3600000d, 24d);
 	}
 
 	public int getVoteDelayDailyHour(String siteName) {

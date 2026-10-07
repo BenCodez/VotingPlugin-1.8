@@ -41,3 +41,5 @@ Artifacts section; artifacts are retained for 14 days. Builds also run on
 The workflow first builds and installs AdvancedCore-1.8 from the exact commit
 in `.github/advancedcore-ref`. Update that pin when adopting a newer producer;
 it deliberately does not use a moving branch or an older published artifact.
+
+Backend configuration compatibility: [docs/backend-config-alignment.md](docs/backend-config-alignment.md).

@@ -107,7 +107,7 @@ public class Config extends YMLFile {
 	@Getter
 	private boolean countFakeVotes = true;
 
-	@ConfigDataInt(path = "DelayBetweenUpdates")
+	// Numeric legacy minutes and modern duration strings are parsed in loadValues().
 	@Getter
 	private int delayBetweenUpdates = 3;
 
@@ -730,7 +730,39 @@ public class Config extends YMLFile {
 	@Override
 	public void loadValues() {
 		new AnnotationHandler().load(getData(), this);
+        delayBetweenUpdates = com.bencodez.advancedcore.ConfigDuration.readInt(
+                getData().get("DelayBetweenUpdates"), 60000L, 3);
+        if (!getData().contains("Format.BroadcastMsg") && getData().contains("VoteBroadcast.Format.BroadcastMsg")) {
+            formatBroadCastMsg = getData().getString("VoteBroadcast.Format.BroadcastMsg");
+        }
+        if (!getData().contains("Format.BroadcastWhenOnline") && getData().contains("VoteBroadcast.Type")) {
+            String type = getData().getString("VoteBroadcast.Type");
+            formatBroadcastWhenOnline = "EVERY_VOTE_ONLINE_ONLY".equalsIgnoreCase(type);
+            if ("NONE".equalsIgnoreCase(type)) broadcastVotesEnabled = false;
+        }
+        warnUnsupportedModernFeatures();
 	}
+
+    private void warnUnsupportedModernFeatures() {
+        // Config schema compatibility does not imply that optional modern subsystems are ported.
+        String[] features = {"VoteReminderOptions.Enabled", "Control.Backend.Enabled", "Control.Hosted.Enabled",
+                "DiscordSRV.Enabled", "VoteLogging.Enabled", "Webhooks.Enabled"};
+        for (String feature : features) {
+            if (getData().getBoolean(feature, false)) {
+                getPlugin().getLogger().warning("Java 8 candidate: " + feature
+                        + " is configured, but its modern subsystem is not implemented in this fork.");
+            }
+        }
+        for (String unit : new String[]{"Day", "Week", "Month"}) {
+            if (!getData().getBoolean("AutomaticTimeChanges." + unit, true)) {
+                getPlugin().getLogger().warning("Java 8 candidate: AutomaticTimeChanges." + unit + " filtering is not implemented.");
+            }
+        }
+        String type = getData().getString("VoteBroadcast.Type", "EVERY_VOTE");
+        if (!"EVERY_VOTE".equalsIgnoreCase(type) && !"EVERY_VOTE_ONLINE_ONLY".equalsIgnoreCase(type) && !"NONE".equalsIgnoreCase(type)) {
+            getPlugin().getLogger().warning("Java 8 candidate supports only NONE, EVERY_VOTE and EVERY_VOTE_ONLINE_ONLY broadcast modes.");
+        }
+    }
 
 	@Override
 	public void onFileCreation() {

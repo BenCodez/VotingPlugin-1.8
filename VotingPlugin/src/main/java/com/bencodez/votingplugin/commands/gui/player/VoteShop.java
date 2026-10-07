@@ -96,7 +96,7 @@ public class VoteShop extends GUIHandler {
 			if (!plugin.getShopFile().getVoteShopNotBuyable(identifier)) {
 				if ((hasPerm || !plugin.getShopFile().getVoteShopHideOnNoPermission(identifier))
 						&& (limitPass || !plugin.getShopFile().isVoteShopHideLimitedReached())) {
-					ItemBuilder builder = new ItemBuilder(plugin.getShopFile().getShopIdentifierSection(identifier));
+					ItemBuilder builder = new ItemBuilder(plugin.getShopFile().getShopDisplayItemSection(identifier));
 
 					inv.addButton(new BInventoryButton(builder) {
 
@@ -179,7 +179,7 @@ public class VoteShop extends GUIHandler {
 				}
 			} else {
 				if (hasPerm) {
-					ItemBuilder builder = new ItemBuilder(plugin.getShopFile().getShopIdentifierSection(identifier));
+					ItemBuilder builder = new ItemBuilder(plugin.getShopFile().getShopDisplayItemSection(identifier));
 					inv.addButton(new BInventoryButton(builder) {
 
 						@Override
