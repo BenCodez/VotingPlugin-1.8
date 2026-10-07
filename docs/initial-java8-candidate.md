@@ -13,8 +13,9 @@ for this initial candidate. Unsupported and unverified features remain explicit.
 | VotingPlugin | `1b1e6d7d47a3d0af2ad5ede79ae3436c7aaddf73` | `834bcb84a59b6da40640eac83c20fd97ad1d64c9` |
 
 The primary target is an actual Java 8 runtime and Spigot 1.8.8. Existing legacy
-APIs, configuration keys/defaults, saved user/reward formats and proxy payloads
-remain the compatibility boundary. Existing operator configuration is not replaced.
+APIs, configuration keys/defaults and saved user/reward formats remain the
+compatibility boundary. Current-proxy JSON and the explicit LEGACY mode are
+described in [current-proxy-backend.md](current-proxy-backend.md). Existing operator configuration is not replaced.
 `VotingPlugin/src.main.java` is retained. No release version is changed.
 
 The candidate restores reproducible Java 8 builds and ports selected portable
@@ -30,11 +31,13 @@ checkout, or read-only reference is modified.
   shared core contracts/checked adapters are present and tested, but the existing
   native plugin storage lifecycle remains authoritative. No operator-facing claim
   of a fully integrated replacement is made.
-- Current Control management, authenticated modern proxy transports, and complete
-  current-main network/storage semantics. Existing legacy transport contracts stay.
+- Current Control management, modern transports other than PLUGINMESSAGING, and
+  complete current-main network/storage semantics. See the current-proxy backend
+  document for JSON/encryption support and delivery/identity migration limits.
 - Current Velocity, Paper/Folia, Adventure and modern NMS/platform features.
-  Velocity sources are retained but excluded from the Java 8 artifact. Legacy
-  Bungee support does not imply current Bungee runtime Java 8 compatibility.
+  Historical Velocity and Bungee source trees are retained; their entry points
+  and descriptors are excluded from the backend-only Java 8 artifact. Current
+  proxies run separate current artifacts on their required Java runtime.
 - Automatic teardown recovery after a producer misses the five-second shutdown
   grace period. Disable reports failure and retains its provider/accepted work for
   explicit retry; it does not force cancellation or close beneath active writes.

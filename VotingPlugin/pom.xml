@@ -212,6 +212,9 @@
                                         <exclude>com/bencodez/votingplugin/proxy/velocity/**</exclude>
                                         <exclude>com/bencodez/votingplugin/proxy/multiproxy/MultiProxyServerSocketConfigurationVelocity.class</exclude>
                                         <exclude>velocity-plugin.json</exclude>
+                                        <exclude>bungee.yml</exclude>
+                                        <exclude>bungeeconfig.yml</exclude>
+                                        <exclude>com/bencodez/votingplugin/proxy/bungee/**</exclude>
                                         <exclude>com/bencodez/simpleapi/file/velocity/**</exclude>
                                         <exclude>com/bencodez/simpleapi/sql/mysql/config/MysqlConfigVelocity.class</exclude>
 									</excludes>

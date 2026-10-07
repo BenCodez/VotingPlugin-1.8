@@ -43,3 +43,5 @@ in `.github/advancedcore-ref`. Update that pin when adopting a newer producer;
 it deliberately does not use a moving branch or an older published artifact.
 
 Backend configuration compatibility: [docs/backend-config-alignment.md](docs/backend-config-alignment.md).
+
+Current-proxy backend compatibility and upgrade limits: [docs/current-proxy-backend.md](docs/current-proxy-backend.md).

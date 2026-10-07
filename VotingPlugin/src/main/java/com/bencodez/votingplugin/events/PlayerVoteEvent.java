@@ -56,6 +56,11 @@ public class PlayerVoteEvent extends Event {
 	@Setter
 	private boolean realVote = true;
 
+    /** Only set for a queued current-proxy delivery with a valid stable vote ID. */
+    @Getter
+    @Setter
+    private boolean proxyRecordedVote;
+
 	@Getter
 	@Setter
 	private String serviceSite = "";

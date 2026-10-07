@@ -83,10 +83,17 @@ public class BungeeHandler implements Listener {
 	private GlobalMessageHandler globalMessageHandler;
 
 	private Thread redisThread;
+	private com.bencodez.votingplugin.backendproxy.CurrentPluginMessaging currentMessaging;
 
 	public BungeeHandler(VotingPluginMain plugin) {
 		this.plugin = plugin;
 	}
+
+    /** Preserve post-authentication login ordering for both protocol generations. */
+    public void sendAuthenticatedLogin(org.bukkit.entity.Player player, String name, String uuid) {
+        if (currentMessaging != null) currentMessaging.authenticatedLogin(player, uuid);
+        else globalMessageHandler.sendMessage("Login", name, uuid, plugin.getBungeeSettings().getServer());
+    }
 
 	public void checkGlobalData() {
 		try (GlobalWork work = acquireGlobalWork()) {
@@ -199,6 +206,7 @@ public class BungeeHandler implements Listener {
 	}
 
 	private void stopTransportIngress() {
+        if (currentMessaging != null) currentMessaging.close();
 		if (socketHandler != null) socketHandler.closeConnection();
 		if (clientHandler != null) clientHandler.stopConnection();
 	}
@@ -300,6 +308,12 @@ public class BungeeHandler implements Listener {
 		bungeeVotePartyCurrent = plugin.getServerData().getBungeeVotePartyCurrent();
 		bungeeVotePartyRequired = plugin.getServerData().getBungeeVotePartyRequired();
 
+        String protocol = com.bencodez.votingplugin.backendproxy.ProxyProtocol.resolve(plugin.getBungeeSettings().getData().getString("ProxyProtocol"), plugin.getBungeeSettings().getBungeeMethod());
+        if (!"CURRENT".equalsIgnoreCase(protocol) && !"LEGACY".equalsIgnoreCase(protocol))
+            throw new IllegalArgumentException("ProxyProtocol must be CURRENT or LEGACY");
+        if ("CURRENT".equalsIgnoreCase(protocol) && !"PLUGINMESSAGING".equalsIgnoreCase(plugin.getBungeeSettings().getBungeeMethod()))
+            throw new IllegalArgumentException("Current proxy compatibility currently requires BungeeMethod PLUGINMESSAGING; LEGACY is only for older proxies");
+
 		plugin.getLogger().info("Using BungeeMethod: " + method.toString());
 
 		loadGlobalMysql();
@@ -308,6 +322,7 @@ public class BungeeHandler implements Listener {
 
 			@Override
 			public void sendMessage(String subChannel, String... messageData) {
+                if (currentMessaging != null) { currentMessaging.sendLegacy(subChannel, messageData); return; }
 				if (method.equals(BungeeMethod.MYSQL)) {
 					plugin.getPluginMessaging().sendPluginMessage(subChannel, messageData);
 				} else if (method.equals(BungeeMethod.PLUGINMESSAGING)) {
@@ -413,7 +428,9 @@ public class BungeeHandler implements Listener {
 						broadcast = false;
 					}
 
-					user.bungeeVotePluginMessaging(service, time, text, !setTotals, wasOnline, broadcast, num);
+					user.bungeeVotePluginMessaging(service, time, text, !setTotals, wasOnline, broadcast, num,
+                            args.size() > 12 ? Boolean.parseBoolean(args.get(5)) : true,
+                            args.size() > 13 && "CURRENT".equals(args.get(12)) && Boolean.parseBoolean(args.get(13)));
 					if (plugin.getBungeeSettings().isPerServerPoints()) {
 						user.addPoints(plugin.getConfigFile().getPointsOnVote());
 					}
@@ -502,7 +519,9 @@ public class BungeeHandler implements Listener {
 						broadcast = false;
 					}
 
-					user.bungeeVotePluginMessaging(service, time, text, !setTotals, wasOnline, broadcast, num);
+					user.bungeeVotePluginMessaging(service, time, text, !setTotals, wasOnline, broadcast, num,
+                            args.size() > 12 ? Boolean.parseBoolean(args.get(5)) : true,
+                            args.size() > 13 && "CURRENT".equals(args.get(12)) && Boolean.parseBoolean(args.get(13)));
 					if (plugin.getBungeeSettings().isPerServerPoints()) {
 						user.addPoints(plugin.getConfigFile().getPointsOnVote());
 					}
@@ -531,7 +550,13 @@ public class BungeeHandler implements Listener {
 
 				user.offVote();
 
-				if (args.size() > 3 && plugin.getBungeeSettings().isPerServerMilestones()) {
+                if (args.size() > 5 && !args.get(4).isEmpty() && Long.parseLong(args.get(5)) > 0) {
+                    VoteSite site = plugin.getVoteSite(args.get(4), true);
+                    if (site != null) user.setTime(site, Long.parseLong(args.get(5)));
+                    else plugin.getLogger().warning("Ignoring VoteUpdate time for an unresolved vote site");
+                }
+
+				if (args.size() > 3 && !args.get(3).isEmpty() && plugin.getBungeeSettings().isPerServerMilestones()) {
 					BungeeMessageData text = new BungeeMessageData(args.get(3));
 					plugin.getSpecialRewards().checkMilestone(user, text, true);
 				}
@@ -674,6 +699,12 @@ public class BungeeHandler implements Listener {
 			redisThread.start();
 
 		} else if (method.equals(BungeeMethod.PLUGINMESSAGING)) {
+            if ("CURRENT".equalsIgnoreCase(protocol)) {
+                currentMessaging = new com.bencodez.votingplugin.backendproxy.CurrentPluginMessaging(plugin, this);
+                currentMessaging.start();
+                return;
+            }
+            if (!"LEGACY".equalsIgnoreCase(protocol)) throw new IllegalArgumentException("ProxyProtocol must be CURRENT or LEGACY");
 			plugin.registerBungeeChannels(plugin.getBungeeSettings().getPluginMessagingChannel());
 
 			if (plugin.getBungeeSettings().isPluginMessageEncryption()) {

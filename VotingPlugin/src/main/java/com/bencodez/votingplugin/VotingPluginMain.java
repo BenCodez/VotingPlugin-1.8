@@ -1626,6 +1626,8 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 
 		bungeeSettings = new BungeeSettings(this);
 		bungeeSettings.setup();
+        getOptions().setCaseInsensitiveOfflineUuids(bungeeSettings.isUseBungeecoord()
+                && "CURRENT".equalsIgnoreCase(com.bencodez.votingplugin.backendproxy.ProxyProtocol.resolve(bungeeSettings.getData().getString("ProxyProtocol"), bungeeSettings.getBungeeMethod())));
 
 		serverData = new ServerData(this);
 

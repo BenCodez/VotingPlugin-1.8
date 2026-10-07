@@ -14,16 +14,17 @@ import java.util.jar.JarFile;
 import org.junit.jupiter.api.Test;
 
 class Java8ArtifactIT {
-    @Test void exactShadedPluginRetainsLegacyApisAndOnlyJava8Platforms() throws Exception {
+    @Test void exactShadedBackendRetainsLegacyApisAndOnlyJava8Classes() throws Exception {
         Path artifact = Paths.get(System.getProperty("votingplugin.jar"));
         assertTrue(Files.isRegularFile(artifact));
         int classCount = 0;
         HashSet<String> names = new HashSet<>();
         try (JarFile jar = new JarFile(artifact.toFile())) {
             assertNotNull(jar.getJarEntry("plugin.yml"));
-            assertNotNull(jar.getJarEntry("bungee.yml"));
+            assertNull(jar.getJarEntry("bungee.yml"));
             assertNotNull(jar.getJarEntry("com/bencodez/votingplugin/VotingPluginMain.class"));
-            assertNotNull(jar.getJarEntry("com/bencodez/votingplugin/proxy/bungee/VotingPluginBungee.class"));
+            assertNull(jar.getJarEntry("com/bencodez/votingplugin/proxy/bungee/VotingPluginBungee.class"));
+            assertNotNull(jar.getJarEntry("com/bencodez/votingplugin/backendproxy/CurrentPluginMessaging.class"));
             assertNull(jar.getJarEntry("velocity-plugin.json"));
             assertNotNull(jar.getJarEntry("com/bencodez/votingplugin/simpleapi/folialib/impl/LegacySpigotImplementation.class"));
             Enumeration<JarEntry> entries = jar.entries();
