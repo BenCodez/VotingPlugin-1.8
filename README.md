@@ -30,3 +30,14 @@ https://github.com/BenCodez/VotingPlugin/blob/master/VotingPlugin/Resources/LICE
 
 
 Java 8 synchronization decisions and validation: [docs/java8-sync.md](docs/java8-sync.md).
+
+## Pull-request JAR builds
+
+GitHub Actions builds and tests pull requests using Temurin Java 8 and Maven
+`clean verify`. Download the shaded plugin JAR from the successful run's
+Artifacts section; artifacts are retained for 14 days. Builds also run on
+`master` pushes and can be started manually after the workflow reaches `master`.
+
+The workflow first builds and installs AdvancedCore-1.8 from the exact commit
+in `.github/advancedcore-ref`. Update that pin when adopting a newer producer;
+it deliberately does not use a moving branch or an older published artifact.
