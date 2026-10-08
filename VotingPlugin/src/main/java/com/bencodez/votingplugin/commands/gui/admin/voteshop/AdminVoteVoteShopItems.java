@@ -43,7 +43,7 @@ public class AdminVoteVoteShopItems extends GUIHandler {
 
 		for (String identifier : plugin.getShopFile().getShopIdentifiers()) {
 			inv.addButton(
-					new BInventoryButton(new ItemBuilder(plugin.getShopFile().getShopIdentifierSection(identifier))) {
+					new BInventoryButton(new ItemBuilder(plugin.getShopFile().getShopDisplayItemSection(identifier))) {
 
 						@Override
 						public void onClick(ClickEvent clickEvent) {

@@ -3,6 +3,9 @@ package com.bencodez.votingplugin.timequeue;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Queue;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +25,11 @@ public class TimeQueueHandler implements Listener {
 	private Queue<VoteTimeQueue> timeChangeQueue = new ConcurrentLinkedQueue<>();
 
 	private VotingPluginMain plugin;
+	// Only wake-up handles; actual votes remain in the existing persistent queue.
+	private final Object checkOwner = new Object();
+	private final Set<ScheduledFuture<?>> checks = new HashSet<>();
+	private boolean stoppingChecks;
+
 
 	public TimeQueueHandler(VotingPluginMain plugin) {
 		this.plugin = plugin;
@@ -40,24 +48,35 @@ public class TimeQueueHandler implements Listener {
 					.add(new VoteTimeQueue(data.getString("Name"), data.getString("Service"), data.getLong("Time")));
 		}
 		plugin.getServerData().clearTimedVoteCache();
-		plugin.getVoteTimer().schedule(new Runnable() {
-
-			@Override
-			public void run() {
-				processQueue();
-			}
-		}, 120, TimeUnit.SECONDS);
+		scheduleCheck(120);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void postTimeChange(DateChangedEvent event) {
-		plugin.getVoteTimer().schedule(new Runnable() {
+		scheduleCheck(5);
+	}
 
-			@Override
-			public void run() {
-				processQueue();
-			}
-		}, 5, TimeUnit.SECONDS);
+	private void scheduleCheck(long delaySeconds) {
+		synchronized (checkOwner) {
+			if (stoppingChecks) return;
+			checks.removeIf(java.util.concurrent.Future::isDone);
+			final ScheduledFuture<?>[] handle = new ScheduledFuture<?>[1];
+			handle[0] = plugin.getVoteTimer().schedule(() -> {
+				synchronized (checkOwner) { if (stoppingChecks) return; }
+				try { processQueue(); }
+				finally { synchronized (checkOwner) { checks.remove(handle[0]); } }
+			}, delaySeconds, TimeUnit.SECONDS);
+			checks.add(handle[0]);
+		}
+	}
+
+	/** Cancel delayed queue wake-ups, preserving queued votes and any running vote body. */
+	public void stopScheduledChecks() {
+		synchronized (checkOwner) {
+			stoppingChecks = true;
+			for (ScheduledFuture<?> check : checks) check.cancel(false);
+			checks.clear();
+		}
 	}
 
 	public void processQueue() {

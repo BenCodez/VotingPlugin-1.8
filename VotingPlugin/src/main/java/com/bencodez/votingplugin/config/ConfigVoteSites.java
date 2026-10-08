@@ -179,7 +179,7 @@ public class ConfigVoteSites extends YMLFile {
 	 * @return the vote delay
 	 */
 	public double getVoteDelay(String siteName) {
-		return getData(siteName).getDouble("VoteDelay", 24);
+		return com.bencodez.advancedcore.ConfigDuration.read(getData(siteName).get("VoteDelay"), 3600000d, 24d);
 	}
 
 	public int getVoteDelayDailyHour(String siteName) {
@@ -277,6 +277,20 @@ public class ConfigVoteSites extends YMLFile {
 		});
 
 		return voteSites;
+	}
+
+	/** Configured sections, including disabled or incomplete sites. This read never creates a site. */
+	public ArrayList<String> getRawVoteSiteNames() {
+		ArrayList<String> names = new ArrayList<>();
+		if (!getData().isConfigurationSection("VoteSites")) {
+			return names;
+		}
+		for (String name : getData().getConfigurationSection("VoteSites").getKeys(false)) {
+			if (getData().isConfigurationSection("VoteSites." + name)) {
+				names.add(name);
+			}
+		}
+		return names;
 	}
 
 	public ArrayList<String> getVoteSitesNames(boolean checkEnabled) {

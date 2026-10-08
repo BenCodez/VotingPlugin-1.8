@@ -86,13 +86,13 @@ public class AdminVoteVoteShopItem extends GUIHandler {
 				}));
 
 		// display item
-		ConfigurationSection displayItemData = plugin.getShopFile().getShopIdentifierSection(identifier);
+		ConfigurationSection displayItemData = plugin.getShopFile().getShopDisplayItemSection(identifier);
 		inv.addButton(new EditGUIButton(new ItemBuilder(displayItemData.getString("Material")).setAmount(1),
 				new EditGUIValueString("Material", displayItemData.getString("Material")) {
 
 					@Override
 					public void setValue(Player player, String name) {
-						setPathData(getKey(), name);
+						setDisplayPathData(getKey(), name);
 					}
 				}));
 		inv.addButton(new EditGUIButton(new ItemBuilder(Material.PAPER, 1),
@@ -100,7 +100,7 @@ public class AdminVoteVoteShopItem extends GUIHandler {
 
 					@Override
 					public void setValue(Player player, String name) {
-						setPathData(getKey(), name);
+						setDisplayPathData(getKey(), name);
 					}
 				}));
 		inv.addButton(new EditGUIButton(new ItemBuilder(Material.BOOK, 1),
@@ -108,7 +108,7 @@ public class AdminVoteVoteShopItem extends GUIHandler {
 
 					@Override
 					public void setValue(Player player, ArrayList<String> value) {
-						setPathData(getKey(), value);
+						setDisplayPathData(getKey(), value);
 					}
 				}));
 		inv.addButton(new BInventoryButton(
@@ -119,7 +119,7 @@ public class AdminVoteVoteShopItem extends GUIHandler {
 				ItemBuilder item = new ItemBuilder(clickEvent.getPlayer().getInventory().getItemInHand().clone());
 				Map<String, Object> map = item.getConfiguration(false);
 				for (Entry<String, Object> entry : map.entrySet()) {
-					setPathData(entry.getKey(), entry.getValue());
+					setDisplayPathData(entry.getKey(), entry.getValue());
 				}
 			}
 		});
@@ -131,7 +131,7 @@ public class AdminVoteVoteShopItem extends GUIHandler {
 				ItemBuilder item = new ItemBuilder(clickEvent.getPlayer().getInventory().getItemInHand().clone());
 				Map<String, Object> map = item.getConfiguration(true);
 				for (Entry<String, Object> entry : map.entrySet()) {
-					setPathData("ItemStack." + entry.getKey(), entry.getValue());
+					setDisplayPathData("ItemStack." + entry.getKey(), entry.getValue());
 				}
 			}
 		});
@@ -154,6 +154,11 @@ public class AdminVoteVoteShopItem extends GUIHandler {
 	public void open() {
 		open(GUIMethod.CHEST);
 	}
+
+    private void setDisplayPathData(String path, Object value) {
+        ConfigurationSection section = plugin.getShopFile().getShopIdentifierSection(identifier);
+        setPathData((section != null && section.isConfigurationSection("DisplayItem") ? "DisplayItem." : "") + path, value);
+    }
 
 	private void setPathData(String path, Object value) {
 		plugin.getShopFile().getData().set("Shop." + identifier + "." + path, value);

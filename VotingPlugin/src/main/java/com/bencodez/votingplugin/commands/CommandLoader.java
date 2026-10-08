@@ -1857,7 +1857,16 @@ public class CommandLoader {
 			cmd.setPerm(cmd.getPerm() + "|" + adminPerm);
 		}
 		plugin.getAdminVoteCommand().addAll(avCommands);
+		configureBulkPermissions(plugin.getAdminVoteCommand(), adminPerm);
 
+	}
+
+	static void configureBulkPermissions(Iterable<CommandHandler> handlers, String adminPermission) {
+		for (CommandHandler handler : handlers) {
+			if (handler instanceof PlayerCommandHandler) {
+				((PlayerCommandHandler) handler).withAllPermissionOverrides(adminPermission);
+			}
+		}
 	}
 
 	/**

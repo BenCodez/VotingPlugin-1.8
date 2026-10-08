@@ -299,6 +299,11 @@ public class VotingPluginUser extends com.bencodez.advancedcore.api.user.Advance
 	 */
 	public void bungeeVotePluginMessaging(String service, long time, BungeeMessageData text, boolean setTotals,
 			boolean wasOnline, boolean broadcast, int num) {
+        bungeeVotePluginMessaging(service, time, text, setTotals, wasOnline, broadcast, num, true, false);
+    }
+
+    public void bungeeVotePluginMessaging(String service, long time, BungeeMessageData text, boolean addTotals,
+            boolean wasOnline, boolean broadcast, int num, boolean realVote, boolean proxyRecordedVote) {
 		if (plugin.getBungeeSettings().isUseBungeecoord()) {
 			plugin.debug("Pluginmessaging vote for " + getPlayerName() + " on " + service);
 
@@ -308,7 +313,9 @@ public class VotingPluginUser extends com.bencodez.advancedcore.api.user.Advance
 			voteEvent.setVotingPluginUser(this);
 			voteEvent.setForceBungee(true);
 			voteEvent.setTime(time);
-			voteEvent.setAddTotals(setTotals);
+			voteEvent.setAddTotals(addTotals);
+            voteEvent.setRealVote(realVote);
+            voteEvent.setProxyRecordedVote(proxyRecordedVote);
 			voteEvent.setBungeeTextTotals(text);
 			voteEvent.setWasOnline(wasOnline);
 			voteEvent.setBroadcast(broadcast);
@@ -375,7 +382,8 @@ public class VotingPluginUser extends com.bencodez.advancedcore.api.user.Advance
 					return false;
 				}
 
-				LocalDateTime nextvote = lastVote.plusHours((long) votedelay).plusMinutes((long) voteDelayMin);
+				LocalDateTime nextvote = lastVote.plus(Duration.ofMillis(Math.round(votedelay * 3600000D)))
+						.plus(Duration.ofMillis(Math.round(voteDelayMin * 60000D)));
 
 				return now.isAfter(nextvote);
 			}
@@ -2140,8 +2148,8 @@ public class VotingPluginUser extends com.bencodez.advancedcore.api.user.Advance
 			if (votedelay == 0 && voteSite.getVoteDelayMin() == 0) {
 				return 0;
 			}
-			LocalDateTime nextvote = lastVote.plusHours((long) votedelay)
-					.plusMinutes((long) voteSite.getVoteDelayMin());
+			LocalDateTime nextvote = lastVote.plus(Duration.ofMillis(Math.round(votedelay * 3600000D)))
+					.plus(Duration.ofMillis(Math.round(voteSite.getVoteDelayMin() * 60000D)));
 
 			if (time == 0 || now.isAfter(nextvote)) {
 				return 0;

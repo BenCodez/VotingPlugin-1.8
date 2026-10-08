@@ -197,7 +197,7 @@ public class SpecialRewards {
 
 	public boolean checkMilestone(VotingPluginUser user, BungeeMessageData bungeeMessageData, boolean forceBungee) {
 		int milestoneCount = user.getMilestoneCount();
-		if (bungeeMessageData != null) {
+		if (bungeeMessageData != null && bungeeMessageData.isLegacyMilestoneCount()) {
 			try {
 				milestoneCount = bungeeMessageData.getMilestoneCount();
 			} catch (Exception e) {

@@ -1,7 +1,5 @@
 package com.bencodez.votingplugin.listeners;
 
-import java.util.ArrayList;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -88,15 +86,7 @@ public class VotiferEvent implements Listener {
 
 					String voteSiteNameStr = plugin.getVoteSiteName(false, voteSite, matchSite);
 
-					ArrayList<String> sites = plugin.getConfigVoteSites().getVoteSitesNames(false);
-					boolean createSite = false;
-					if (sites != null) {
-						if (!ArrayUtils.containsIgnoreCase(sites, voteSiteNameStr)) {
-							createSite = true;
-						}
-					} else {
-						createSite = true;
-					}
+					boolean createSite = !plugin.hasConfiguredVoteSite(voteSite, matchSite, voteSiteNameStr);
 
 					String serviceSite = voteSite;
 

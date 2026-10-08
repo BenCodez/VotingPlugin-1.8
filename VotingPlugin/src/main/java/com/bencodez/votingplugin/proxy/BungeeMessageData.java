@@ -20,6 +20,8 @@ public class BungeeMessageData {
 	@Setter
 	private int milestoneCount = 0;
 	@Getter
+	private boolean legacyMilestoneCount = true;
+	@Getter
 	@Setter
 	private int monthTotal = 0;
 	@Getter
@@ -53,6 +55,15 @@ public class BungeeMessageData {
 
 	public BungeeMessageData(String str) {
 		String[] data = str.split(Pattern.quote("//"));
+        if (data.length > 0 && "v2".equals(data[0])) {
+            if (data.length != 9) throw new IllegalArgumentException("Invalid v2 vote totals");
+            allTimeTotal = Integer.parseInt(data[1]); monthTotal = Integer.parseInt(data[2]);
+            weeklyTotal = Integer.parseInt(data[3]); dailyTotal = Integer.parseInt(data[4]);
+            points = Integer.parseInt(data[5]); votePartyCurrent = Integer.parseInt(data[6]);
+            votePartyRequired = Integer.parseInt(data[7]); dateMonthTotal = Integer.parseInt(data[8]);
+            legacyMilestoneCount = false;
+            return;
+        }
 		if (data.length >= 6) {
 			allTimeTotal = Integer.parseInt(data[0]);
 			monthTotal = Integer.parseInt(data[1]);

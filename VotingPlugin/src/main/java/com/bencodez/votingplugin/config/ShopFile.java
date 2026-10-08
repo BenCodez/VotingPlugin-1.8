@@ -135,7 +135,10 @@ public class ShopFile extends YMLFile {
 	public Set<String> getShopIdentifiers() {
 		ConfigurationSection shop = getData().getConfigurationSection("Shop");
 		if (shop != null) {
-			return shop.getKeys(false);
+			Set<String> identifiers = new HashSet<String>(shop.getKeys(false));
+            // A category link is never a zero-cost purchase in the legacy GUI.
+            identifiers.removeIf(key -> shop.getString(key + ".Category", "").length() > 0);
+            return identifiers;
 		}
 		return new HashSet<>();
 	}
@@ -143,6 +146,14 @@ public class ShopFile extends YMLFile {
 	public ConfigurationSection getShopIdentifierSection(String identifier) {
 		return getData().getConfigurationSection("Shop." + identifier);
 	}
+
+    public ConfigurationSection getShopDisplayItemSection(String identifier) {
+        ConfigurationSection section = getShopIdentifierSection(identifier);
+        if (section != null && section.isConfigurationSection("DisplayItem")) {
+            return section.getConfigurationSection("DisplayItem");
+        }
+        return section;
+    }
 
 	public boolean getVoteShopCloseGUI(String shop) {
 		return getData().getBoolean("Shop." + shop + ".CloseGUI", true);

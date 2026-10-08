@@ -311,6 +311,12 @@ public class SpecialRewardsConfig extends YMLFile {
 	@Override
 	public void loadValues() {
 		new AnnotationHandler().load(getData(), this);
+        if (!getData().contains("VoteParty.VoteReminderBroadcast")) {
+            votePartyVoteReminderBroadcast = getData().getString("VoteParty.VoteReminder.Broadcast", "%votesrequired% left to go, go vote!");
+        }
+        if (!getData().contains("VoteParty.VoteReminderAtVotes")) {
+            votePartyVoteReminderAtVotes = new ArrayList<Integer>(getData().getIntegerList("VoteParty.VoteReminder.AtVotes"));
+        }
 	}
 
 	@Override

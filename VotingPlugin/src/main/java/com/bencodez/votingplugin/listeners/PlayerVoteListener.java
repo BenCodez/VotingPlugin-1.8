@@ -131,7 +131,7 @@ public class PlayerVoteListener implements Listener {
 			}
 		}
 
-		if (voteSite.isWaitUntilVoteDelay() && !user.canVoteSite(voteSite)) {
+		if (voteSite.isWaitUntilVoteDelay() && !event.isProxyRecordedVote() && !user.canVoteSite(voteSite)) {
 			if (!event.isRealVote()) {
 				plugin.getLogger().info(user.getPlayerName() + " did a not real vote, bypassing WaitUntilVoteDelay");
 			} else {

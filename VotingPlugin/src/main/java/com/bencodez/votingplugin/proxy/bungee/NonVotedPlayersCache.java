@@ -3,7 +3,7 @@ package com.bencodez.votingplugin.proxy.bungee;
 import java.io.File;
 
 import com.bencodez.simpleapi.file.BungeeJsonFile;
-import com.velocitypowered.api.proxy.Player;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import lombok.Getter;
 import net.md_5.bungee.config.Configuration;
@@ -18,9 +18,9 @@ public class NonVotedPlayersCache extends BungeeJsonFile {
 		this.plugin = plugin;
 	}
 
-	public void addPlayer(Player player) {
+	public void addPlayer(ProxiedPlayer player) {
 		if (!plugin.getVotingPluginProxy().getProxyMySQL().containsKeyQuery(player.getUniqueId().toString())) {
-			addPlayer(player.getUniqueId().toString(), player.getUsername());
+			addPlayer(player.getUniqueId().toString(), player.getName());
 		}
 	}
 

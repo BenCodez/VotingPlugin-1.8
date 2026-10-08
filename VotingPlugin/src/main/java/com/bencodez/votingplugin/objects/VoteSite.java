@@ -137,6 +137,7 @@ public class VoteSite {
 				placeholders.put("nickname",
 						(user.getPlayer() != null) ? user.getPlayer().getDisplayName() : user.getPlayerName());
 				placeholders.put("sitename", getDisplayName());
+				placeholders.put("site", getDisplayName());
 				placeholders.put("servicesite", getServiceSite());
 				placeholders.put("votesrequired", "" + plugin.getVoteParty().getVotesRequired());
 				placeholders.put("neededvotes", "" + plugin.getVoteParty().getNeededVotes());

@@ -1,73 +1,130 @@
-# To disable reward set value to {}
-# or remove entirely
-# Eg:
-# FirstVote: {} (All in one line)
-# Rewards will be given if there is a reward to give, otherwise they will be ignored
+####################################################################################################
+# VotingPlugin – Special Rewards Configuration (SpecialRewards.yml)
+#
+# Quick-disable rule:
+#   - To disable any reward section: set it to {} (single line) or remove it.
+#     Example: FirstVote: {}
+#
+# VoteMilestones (NEW / Recommended):
+#   - Each entry is evaluated on every vote.
+#   - Triggers:
+#       • At: <number|list|range>   (exact totals; supports ranges like 10..50 step 10)
+#       • Every: <number>          (fires at multiples: 10,20,30,...)
+#   - First vote note:
+#       • The first vote total is 1, so use At: 1 for “first vote”.
+#
+# Limits (optional, per milestone):
+#   - NONE (default)           : can trigger whenever it matches
+#   - WINDOW_DAY/WEEK/MONTH    : only once per calendar window
+#   - COOLDOWN                 : once per duration (30m, 12h, 2w, 1mo, 5000ms)
+#
+# Groups (optional):
+#   - Use Group: <id> on a milestone to put multiple milestones into a selection bucket.
+#   - Selection modes per group are configured under VoteMilestonesOptions.Groups:
+#       • ALL     : execute all matched milestones in that group
+#       • FIRST   : execute first matched milestone (file order)
+#       • HIGHEST : execute “best” matched milestone (prefers AT > EVERY; higher values win)
+####################################################################################################
 
-# First vote rewards
-FirstVote: 
-  Messages:
-    Player: '&aYou voted for your first time!'
-    
-# First vote of the day reward
-FirstVoteToday: {}
-
-# All vote rewards
-# One time reward for voting on all sites in one day
-# Enable ExtraAllSitesCheck if you get double rewards
-AllSites: 
-  Messages:
-    Player: '&aYou voted on all sites in 1 day!'
-    
-# Give a reward for voting on all sites minus 1
-# Similar to allsites
-#AlmostAllSites:
-#  Messages:
-#    Player: '&aYou almost voted on all sites in 1 day!'
+# -----------------------------
+# VoteMilestones global options
+# -----------------------------
+VoteMilestonesOptions:
+  Groups:
+    # Group id and setting
+    # Set group id on each votemilestone (default id is default if not set)
+    # Valid options:
+    #   ALL      - Allow giving all vote milestones
+    #   FIRST    - Only give the first vote milestone that is met
+    #   HIGHEST  - Only give the highest vote milestone that is met
+    Default: ALL
+    ExampleId: FIRST
 
 
-# If true only cumulative reward at a time can be given
-# The cumulative rewards will go in order as listed under Cumulative, so if true
-# the first cumulative (in the order as listed) that can be given will, then will ignore the rest
-OnlyOneCumulative: false
-# NOTE: This is not a 1 time reward, that's what milestones are for!
-# If total votes (Can be changed) divided by cumulative amount 
-# and with no remainder (So divides perfectly) then a reward is given
-Cumulative:
-  # Number of votes required
-  # Allows multiple cumulative rewards
-  # Number be be around ' (E.g. '1')
-  # Can have multiple listed here
-  '20':
-    Enabled: false
-    # Whether or not votes must be made in same day/week
-    # Useful if you want to require a certain number of voting sites to be voted on
-    # for a daily/weekly reward instead of all of them
-    # Valid options
-    # AllTime
-    # Monthly
-    # Weekly
-    # Daily
-    TotalToUse: AllTime
-    # Blacklist recurring votes
-    #BlackList:
-    #- 40
-    # Whether or not to gives cumulative reward for every x number of votes, default: true
-    #Recurring: true
-    Rewards: 
+# -----------------------------
+# VoteMilestones
+# -----------------------------
+VoteMilestones:
+
+  # First vote ever (all-time)
+  # Total becomes 1 on the player's first vote.
+  FirstVoteAllTime:
+    Enabled: true
+    Total: AllTime        # also works: ALLTIME_VOTES, ALLTIME, AllTime, etc
+    At: 1
+    Group: first
+    Rewards:
       Messages:
-        Player: '&aYou got %cumulative% cumulative votes!'
+        Player: "&aThanks for your first vote ever!"
 
+  # Every 25 all-time votes
+  Every25Votes:
+    Enabled: false
+    Total: ALLTIME_VOTES
+    Every: 25
+    Rewards:
+      Commands:
+        - "say %player% hit %amount% votes!"
+
+  # Exact milestones + range expansion
+  MilestoneMix:
+    Enabled: true
+    Total: Daily          # Daily / DAILY / DAILY_VOTES all work
+    At:
+      - 5
+      - 10..50 step 10
+      - 100
+    Rewards:
+      Messages:
+        Player: "&bDaily milestone reached: %amount%!"
+
+  # Points milestones
+  Every10Points:
+    Enabled: false
+    Total: POINTS
+    Every: 10
+    Rewards:
+      Commands:
+        - "give %player% diamond 1"
+
+  # AllSitesToday
+  # Rewards when the player votes on ALL sites in one day.
+  AllSitesToday_AllDone:
+    Enabled: true
+    Total: ALLSITES_TODAY
+    At: 5                 # <-- set this to YOUR number of vote sites
+    Limit:
+      Type: WINDOW_DAY
+    Rewards:
+      Messages:
+        Player: "&eYou voted on all sites today!"
+
+  # Cooldown example
+  # Rewards every 3 votes, but only once every 12 hours.
+  SomeCooldownExample:
+    Enabled: false
+    Total: ALLTIME_VOTES
+    Every: 3
+    Limit:
+      Type: COOLDOWN
+      Duration: 12h        # supports: 30m, 12h, 1d, 2w, 1mo, 5000ms
+    Rewards:
+      Messages:
+        Player: "&aYou hit another %amount% votes, but only once every 12 hours!"
+
+
+# -----------------------------
 # Vote party configuration
+# -----------------------------
 VoteParty:
-  # Wether or not vote party is enabled
+  # Whether or not vote party is enabled
   Enabled: false
   # Number of votes required to give rewards
   VotesRequired: 20
   # Increase the amount of votes required on each vote party reached
   #IncreaseVotesRequired: 10
-  # If true, players who did not vote to reach the votes required will 
-  # recieve the reward
+  # If true, players who did not vote to reach the votes required will
+  # receive the reward
   # If false, only players who voted get rewards
   GiveAllPlayers: false
   # If true, give online players the vote party reward
@@ -95,18 +152,23 @@ VoteParty:
   CountOfflineVotes: true
   # Broadcast when vote party reached
   Broadcast: '&cReached the vote party amount!'
-  # Send a broadcast at a certain number of votes left and send a vote reminder
-  VoteReminderBroadcast: '%votesrequired% left to go, go vote!'
+
   # Send vote reminder at number of votes to go
-  VoteReminderAtVotes: []
+  VoteReminder:
+    AtVotes: []
+    # Send a broadcast at a certain number of votes left and send a vote reminder
+    Broadcast: '%votesrequired% left to go, go vote!'
+    # Commands to run instead
+    Commands: []
+
   # List of commands to execute, these only execute once.
   # %player% does not work here
   GlobalCommands: []
-  # List of commands to execute once
-  # Only run will run
+  # List of commands to execute once (picks one randomly)
+  # Only runs once, %player% does not work here
   GlobalRandomCommand: []
   # Rewards to give per player
-  Rewards: 
+  Rewards:
     # Uncomment below for online players to be rewarded only
     #RewardType: ONLINE
     Commands:
@@ -115,97 +177,196 @@ VoteParty:
       DIAMOND:
         Material: 'DIAMOND'
         Amount: 1
-  
-# Reset milestones at end of the month
-ResetMilestonesMonthly: false
-  
-# One time reward to be given (unless you reset it somehow)
-MileStones:
-  # Number of votes required
-  # Allows multiple milestones
-  # Number be around ' (E.g. '1')
-  # Can have multiple listed here
+
+
+# ---------------------------------
+# Vote streak rewards
+# ---------------------------------
+VoteStreaks:
+  # Each streak must have a unique ID.
+  # Player streak data is stored under this ID.
+  #
+  # On proxy networks:
+  # - Use different IDs on each server for independent streaks.
+  # - Use the same ID on every server for one shared global streak.
+  #
+  # Changing an ID will cause the existing stored progress under the old ID
+  # to no longer apply to this streak.
+  Daily3Votes:
+    # The calendar period used for this streak.
+    # Available types include DAILY, WEEKLY, and MONTHLY.
+    Type: DAILY
+
+    # Whether this streak definition is enabled.
+    Enabled: false
+
+    Requirements:
+      # Number of successful periods required to complete the streak.
+      Amount: 3
+
+      # Number of votes required within each period for that period to count.
+      # With Type set to DAILY, this example requires 3 votes in one day.
+      VotesRequired: 3
+
+    # Maximum number of missed periods allowed within the validation window.
+    # Set to 0 to require every period to be completed.
+    AllowMissedAmount: 1
+
+    # Number of recent periods checked when validating the streak.
+    # This example checks the last 7 days because Type is DAILY.
+    AllowMissedPeriod: 7
+
+    # true: Give the reward again at each multiple of Amount.
+    #       With Amount set to 3, rewards are given at 3, 6, 9, and so on.
+    # false: Give the reward only when Amount is reached for the first time.
+    Recurring: true
+
+    # Rewards executed when the streak requirement is completed.
+    # Vote streaks support the standard VotingPlugin Rewards system.
+    Rewards:
+      Commands:
+      - say test
+
+  # Progress groups allow multiple reward milestones to use the same
+  # underlying streak progress and vote requirements.
+  ProgressGroups:
+    # Each progress group must have a unique ID.
+    MyProgressGroupOne:
+      # The calendar period used when tracking progress for this group.
+      Type: DAILY
+
+      # Number of votes required within each period for that period to count.
+      VotesRequired: 1
+
+      # Maximum number of missed periods allowed within the validation window.
+      AllowMissedAmount: 1
+
+      # Number of recent periods checked when validating group progress.
+      # This example checks the last 7 days because Type is DAILY.
+      AllowMissedPeriod: 7
+
+      # Only run LostRewards if the player reached at least one milestone.
+      RequireMilestoneForLostRewards: true
+
+      # Rewards executed when the streak requirement is failed after progress was made.
+      LostRewards:
+        Messages:
+          Player: "&cYou lost your %streak% day voting streak."
+
+      # Each milestone can have its own amount, recurring behavior, and rewards
+      # while sharing the progress settings configured above.
+      Milestones:
+        DailyStreak3:
+          # Whether this milestone is enabled.
+          Enabled: false
+
+          # Number of successful periods required to complete this milestone.
+          Amount: 3
+
+          # true: Give the reward again at each multiple of Amount.
+          # false: Give the reward only the first time Amount is reached.
+          Recurring: false
+
+          # Rewards executed when this milestone is completed.
+          Rewards:
+            Messages:
+              Player: "&aYou reached a 3 day streak"
+
+        DailyStreak7:
+          # Whether this milestone is enabled.
+          Enabled: false
+
+          # Number of successful periods required to complete this milestone.
+          Amount: 7
+
+          # true: Give the reward again at each multiple of Amount.
+          # false: Give the reward only the first time Amount is reached.
+          Recurring: false
+
+          # Rewards executed when this milestone is completed.
+          Rewards:
+            Messages:
+              Player: "&aYou reached a 7 day streak"
+
+
+NameMCLikeReward:
+  Enabled: false
+
+  # Server ip/domain used in the NameMC API URL
+  Url: "play.example.com"
+
+  # How often to check NameMC in minutes
+  CheckIntervalMinutes: 10
+
+  Rewards:
+    Messages:
+      Player: "&aThanks for liking the server on NameMC!"
+    Commands:
+    - "say %player% liked the server on NameMC!"
+
+# -----------------------------
+# Legacy vote rewards (DEPRECATED)
+# -----------------------------
+# These are fully disabled and kept only for reference.
+# VoteMilestones above replace all of this functionality.
+
+FirstVote: {}
+
+FirstVoteToday: {}
+
+AllSites: {}
+
+OnlyOneCumulative: false
+
+Cumulative:
   '20':
     Enabled: false
-    Rewards: 
+    TotalToUse: AllTime
+    Rewards:
+      Messages:
+        Player: '&aYou got %cumulative% cumulative votes!'
+
+ResetMilestonesMonthly: false
+
+MileStones:
+  '20':
+    Enabled: false
+    Rewards:
       Messages:
         Player: '&aYou got %milestone% milestone votes!'
-   
+
 VoteStreak:
-  # Valid options: Day, Week, Month
   Day:
-    # Number of days in a row
-    # Each day requires one vote
-    # Add a - to give a reward for every multiple (e.g. 2- = 2,4,6,8, and so on)
-    # This may not work perfectly on bungee setups at this time
     '2':
-      # Enabled or not
       Enabled: false
-      # Rewards to give
       Rewards:
         Messages:
           Player: "&aYou voted for %Streak% %Type%'s in a row!"
   Week:
-    # Number of weeks in a row
-    # Requires atleast one vote per week
     '2':
-      # Enabled or not
       Enabled: false
-      # Rewards to give
       Rewards:
         Messages:
           Player: "&aYou voted for %Streak% %Type%'s in a row!"
   Month:
-    # Number of months in a row
-    # Requires atleast 1 vote per month
     '2':
-      # Enabled or not
       Enabled: false
-      # Rewards to give
       Rewards:
         Messages:
           Player: "&aYou voted for %Streak% %Type%'s in a row!"
   Requirement:
-    # Require certain percentage of votes
     UsePercentage: false
-    # Percentage requirements of votes
-    # 50 = %50
     Day: 50
     Week: 50
     Month: 50
-    
-# Reward given when all votesites are available to vote on
-# Don't use this unless you really need it
-# Little performance intensive
-# Recommend add RewardType: ONLINE for it to only work online
-VoteCoolDownEndedReward: []
 
-# ONLY USE THIS FOR TITLES/SOUNDS AND OTHER EFFECTS
-# IT WILL ONLY RUN ONE TIME FOR ANY NUMBER OF OFFLINE VOTES (3 offline votes = 1 AnySiteReward)
-# Any reward files listed here are ran on vote of any site
-# It is recommended to add rewards to each site instead of here
-# Using forceoffline won't work here
-# Use EverySiteReward in VoteSites.yml for a global reward for each site
-AnySiteRewards: {}
 
-# Rewards to run when player logs in
-LoginRewards: {}
-
-# Rewards to run when player logs off
-# Will queue until player logs in unless forceoffline is enabled
-LogoutRewards: {}
-
+# -----------------------------
+# Top voter awards
+# -----------------------------
 EnableMonthlyAwards: true
 
-# TopVoter Placeholders:
-#%place% - place in topvoter
-#%topvoter% - topvoter type
-#%votes% - current total votes related to top voter
-
-# Rewards to give
 MonthlyAwards:
-  # Position. 1 is first in top voter, 2 is second, etc...
-  # Using 1-10 will reward players in first to tenth place with the same reward
   1:
     Rewards:
       Messages:
@@ -214,11 +375,9 @@ MonthlyAwards:
     Rewards:
       Messages:
         Player: '&aYou came in second place in %TopVoter%!'
-    
+
 EnableWeeklyAwards: false
-# Rewards to give on weekly top voter
 WeeklyAwards:
-  # Position. 1 is first in top voter, 2 is second, etc...
   1:
     Rewards:
       Messages:
@@ -227,13 +386,10 @@ WeeklyAwards:
     Rewards:
       Messages:
         Player: '&aYou came in second place in %TopVoter%!'
-    
+
 EnableDailyRewards: false
-# Rewards to give on daily top voter
 DailyAwards:
-  # Position. 1 is first in top voter, 2 is second, etc...
   1:
-    # Reward files to give
     Rewards:
       Messages:
         Player: '&aYou came in first place in %TopVoter%!'

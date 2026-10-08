@@ -881,7 +881,9 @@ public abstract class VotingPluginProxy {
 			redisHandler.close();
 		}
 
-		bungeeTimeChecker.shutdown();
+		if (bungeeTimeChecker != null) {
+			bungeeTimeChecker.shutdown();
+		}
 
 		if (getGlobalDataHandler() != null) {
 			getGlobalDataHandler().shutdown();

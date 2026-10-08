@@ -375,11 +375,14 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 	public VoteSite getVoteSite(String site, boolean checkEnabled) {
 		String siteName = getVoteSiteName(checkEnabled, site);
 		for (VoteSite voteSite : getVoteSites()) {
+			if (checkEnabled && !voteSite.isEnabled()) {
+				continue;
+			}
 			if (voteSite.getKey().equalsIgnoreCase(siteName) || voteSite.getDisplayName().equals(siteName)) {
 				return voteSite;
 			}
 		}
-		if (configFile.isAutoCreateVoteSites() && !configVoteSites.getVoteSitesNames(false).contains(siteName)) {
+		if (configFile.isAutoCreateVoteSites() && !hasConfiguredVoteSite(site, siteName)) {
 			configVoteSites.generateVoteSite(siteName);
 			return new VoteSite(plugin, siteName.replace(".", "_"));
 		}
@@ -387,7 +390,39 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 
 	}
 
+	private String getConfiguredVoteSiteName(String... identifiers) {
+		if (identifiers == null) {
+			return null;
+		}
+		ArrayList<String> names = getConfigVoteSites().getRawVoteSiteNames();
+		for (String identifier : identifiers) {
+			if (identifier == null || identifier.isEmpty()) {
+				continue;
+			}
+			String normalized = identifier.replaceAll("[\\.\\s]+", "_");
+			String legacyNormalized = identifier.replace(".", "_").replace(" ", "_");
+			for (String name : names) {
+				String service = getConfigVoteSites().getServiceSite(name);
+				String display = getConfigVoteSites().getDisplayName(name);
+				if (name.equalsIgnoreCase(identifier) || name.equalsIgnoreCase(normalized)
+						|| name.equalsIgnoreCase(legacyNormalized)
+						|| (service != null && !service.isEmpty() && service.equalsIgnoreCase(identifier))
+						|| (display != null && !display.isEmpty() && display.equalsIgnoreCase(identifier))) {
+					return name;
+				}
+			}
+		}
+		return null;
+	}
+
+	public boolean hasConfiguredVoteSite(String... identifiers) {
+		return getConfiguredVoteSiteName(identifiers) != null;
+	}
+
 	public String getVoteSiteName(boolean checkEnabled, String... urls) {
+		if (urls == null) {
+			return null;
+		}
 		ArrayList<String> sites = getConfigVoteSites().getVoteSitesNames(checkEnabled);
 
 		for (String url : urls) {
@@ -409,6 +444,13 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 
 					}
 				}
+			}
+		}
+
+		if (!checkEnabled) {
+			String configured = getConfiguredVoteSiteName(urls);
+			if (configured != null) {
+				return configured;
 			}
 		}
 
@@ -1402,22 +1444,30 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 	 *
 	 * @see org.bukkit.plugin.java.JavaPlugin#onDisable()
 	 */
+	private boolean shutdownIngressStopped;
+
 	@Override
-	public void onUnLoad() {
-		if (bungeeSettings.isUseBungeecoord()) {
+	public void onPreUnLoad() {
+		if (!shutdownIngressStopped) {
+			if (bungeeHandler != null) bungeeHandler.stopAcceptingMessages();
+			shutdownIngressStopped = true;
+		}
+		if (timeQueueHandler != null) timeQueueHandler.stopScheduledChecks();
+		if (voteTimer != null) {
+			voteTimer.shutdown();
 			try {
-				getBungeeHandler().close();
-			} catch (Exception e) {
-				debug(e);
+				if (!voteTimer.awaitTermination(1, TimeUnit.SECONDS)) throw new IllegalStateException("Accepted vote work has not settled; storage provider remains open");
+			} catch (InterruptedException interrupted) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Vote shutdown interrupted; storage provider remains open", interrupted);
 			}
 		}
-		voteTimer.shutdown();
-		try {
-			voteTimer.awaitTermination(1, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		voteTimer.shutdownNow();
+	}
+
+	@Override
+	public void onUnLoad() {
+		onPreUnLoad();
+		if (bungeeHandler != null) bungeeHandler.close();
 		if (timeQueueHandler != null) {
 			timeQueueHandler.save();
 		}
@@ -1508,6 +1558,8 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 	}
 
 	private void reloadPlugin(boolean userStorage) {
+		// Seal old global readers before configuration or the borrowed main pool can change.
+		if (userStorage && bungeeHandler != null) bungeeHandler.stopGlobalDataForStorageReload();
 		configFile.reloadData();
 		configFile.loadValues();
 
@@ -1524,12 +1576,10 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 		reloadAdvancedCore(userStorage);
 
 		if (bungeeSettings.isUseBungeecoord()) {
-			if (getBungeeHandler() == null) {
-				loadBungeeHandler();
-			}
-			if (userStorage) {
-				getBungeeHandler().loadGlobalMysql();
-			}
+			if (bungeeHandler == null) loadBungeeHandler();
+			else if (userStorage) bungeeHandler.loadGlobalMysql();
+		} else if (userStorage && bungeeHandler != null) {
+			bungeeHandler.closeGlobalDataForStorageReload();
 		}
 		checkYMLError();
 
@@ -1576,6 +1626,8 @@ public class VotingPluginMain extends AdvancedCorePlugin {
 
 		bungeeSettings = new BungeeSettings(this);
 		bungeeSettings.setup();
+        getOptions().setCaseInsensitiveOfflineUuids(bungeeSettings.isUseBungeecoord()
+                && "CURRENT".equalsIgnoreCase(com.bencodez.votingplugin.backendproxy.ProxyProtocol.resolve(bungeeSettings.getData().getString("ProxyProtocol"), bungeeSettings.getBungeeMethod())));
 
 		serverData = new ServerData(this);
 

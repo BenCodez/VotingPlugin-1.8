@@ -376,9 +376,22 @@ public class VotingPluginBungee extends Plugin implements Listener {
 
 	}
 
+	/** Retain the connected player's canonical spelling for offline UUIDs. */
+	String getOfflineUUID(String playerName) {
+		ProxiedPlayer player = getProxy().getPlayer(playerName);
+		if (player != null && player.isConnected()) {
+			playerName = player.getName();
+		}
+		return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8))
+				.toString();
+	}
+
 	@Override
 	public void onDisable() {
-		if (getVotingPluginProxy().getMethod().equals(BungeeMethod.PLUGINMESSAGING)) {
+		if (getVotingPluginProxy() == null) {
+			return;
+		}
+		if (voteCacheFile != null && BungeeMethod.PLUGINMESSAGING.equals(getVotingPluginProxy().getMethod())) {
 			getLogger().info("VotingPlugin saving vote cache: " + getVotingPluginProxy().getCachedVotes().size() + "/"
 					+ getVotingPluginProxy().getCachedOnlineVotes().size());
 			for (Entry<String, ArrayList<OfflineBungeeVote>> entry : getVotingPluginProxy().getCachedVotes()
@@ -400,7 +413,7 @@ public class VotingPluginBungee extends Plugin implements Listener {
 				}
 			}
 		}
-		if (!getVotingPluginProxy().getTimeChangeQueue().isEmpty()) {
+		if (voteCacheFile != null && !getVotingPluginProxy().getTimeChangeQueue().isEmpty()) {
 			int num = 0;
 			for (VoteTimeQueue vote : getVotingPluginProxy().getTimeChangeQueue()) {
 				voteCacheFile.addTimedVote(num, vote);
@@ -410,8 +423,12 @@ public class VotingPluginBungee extends Plugin implements Listener {
 
 		getVotingPluginProxy().onDisable();
 
-		voteCacheFile.save();
-		nonVotedPlayersCache.save();
+		if (voteCacheFile != null) {
+			voteCacheFile.save();
+		}
+		if (nonVotedPlayersCache != null) {
+			nonVotedPlayersCache.save();
+		}
 
 		getLogger().info("VotingPlugin disabled");
 
@@ -473,8 +490,7 @@ public class VotingPluginBungee extends Plugin implements Listener {
 			public String getUUID(String playerName) {
 
 				if (!config.getOnlineMode()) {
-					return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8))
-							.toString();
+					return getOfflineUUID(playerName);
 				}
 				ProxiedPlayer p = getProxy().getPlayer(playerName);
 				if (p != null && p.isConnected()) {
