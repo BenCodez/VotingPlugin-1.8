@@ -260,6 +260,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.10.3</version><scope>test</scope>
         </dependency>
+        <!-- Mockito 4 retains Java 8 support; its old transitive Byte Buddy cannot instrument Java 21. -->
+        <dependency>
+            <groupId>net.bytebuddy</groupId><artifactId>byte-buddy</artifactId><version>1.15.1</version><scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId><artifactId>byte-buddy-agent</artifactId><version>1.15.1</version><scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
