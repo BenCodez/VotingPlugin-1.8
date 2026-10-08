@@ -45,10 +45,14 @@ class Java8ArtifactIT {
             }
         }
         assertTrue(classCount > 1000, "Inspect the actual self-contained shaded plugin");
-        try (URLClassLoader loader = new URLClassLoader(new URL[] {artifact.toUri().toURL()}, null)) {
+        // JDBC belongs to the bootstrap loader on Java 8 and the platform loader on modular JDKs.
+        try (URLClassLoader loader = new URLClassLoader(new URL[] {artifact.toUri().toURL()},
+                java.sql.Connection.class.getClassLoader())) {
+            assertThrows(ClassNotFoundException.class, () -> loader.loadClass("org.junit.jupiter.api.Test"));
             Class<?> legacy = Class.forName("com.bencodez.votingplugin.simpleapi.servercomm.global.GlobalMessageProxyHandler", false, loader);
             assertNotNull(legacy.getMethod("sendMessage", String.class, String.class, String[].class));
             Class<?> config = Class.forName("com.bencodez.votingplugin.advancedcore.hikari.HikariConfig", true, loader);
+            assertSame(loader, config.getClassLoader());
             Object pool = config.getConstructor().newInstance();
             config.getMethod("setMaximumPoolSize", int.class).invoke(pool, 2);
             assertEquals(2, config.getMethod("getMaximumPoolSize").invoke(pool));
